@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card Demo</title>
+  <link rel="stylesheet" href="stylesheets/main.css">
+</head>
+<body>
+
+  <p>What would the advantages of a DOM-based game?</p>
+
+  <ol>
+    <li>Animations would be easy to implement without requiring
+      an always-running update loop.</li>
+    <li>Could animate cards either returning to their original location, or snapping into place</li>
+    <li>Could animate cards flipping in 3d space</li>
+    <li>Could create an animation for dropping cards on a foundation</li>
+  </ol>
+
+  <p>disadvantages</p>
+
+  <ol>
+    <li>implementing card waterfall would be a PITA -- would have to overlay a canvas and import images
+      from the DOM -- would have to use &lt;img> tags for card fronts/backs (https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement)</li>
+    <li>alternative idea: background is a &lt;canvas>, and every update draws the card image at its current position</li>
+  </ol>
+
+  <p>how would we handle displaying card cascades? would need to recursively move child cards</p>
+
+
+  <p>how would piles, foundations, etc. work in this version of the game?
+    I'm imagining that since I want to attach event listeners to each card, the card itself would need to know
+    what stack it's in. Otherwise we'd need to have an invisible "stack" object that would layer itself on top
+    of all its contents.
+  </p>
+
+  <!-- https://tobiasahlin.com/blog/how-to-animate-box-shadow/ -->
+
+  <style type="text/css">
+
+  </style>
+
+  <script src="scripts/card.js"></script>
+  <script src="scripts/stack.js"></script>
+  <script src="scripts/grabbed.js"></script>
+  <script src="scripts/cell.js"></script>
+  <script src="scripts/cascade.js"></script>
+  <script src="scripts/foundation.js"></script>
+
+  <script>
+    const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
+    const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
+
+    // used for custom double-click/tap implementation
+    // this val is set in `onDown` function; if it is called again rapidly
+    // (e.g. within 500ms) then the interaction counts as a double-click
+    let lastOnDownTimestamp = Date.now();
+
+    const cascades = [];
+    for (let i = 0; i < 8; i += 1) {
+      const cascade = new Cascade();
+      cascade.moveTo(10 + (85 * i), 100);
+      cascades.push(cascade);
+
+      // these don't have a visible component,
+      // so we don't need to append them to the DOM
+    }
+
+    const foundations = [];
+    for (let i = 0; i < 4; i += 1) {
+      const foundation = new Foundation();
+      foundation.moveTo(10 + (85 * i), 10);
+      foundations.push(foundation);
+
+      // Make these visible by adding to DOM
+      document.body.append(foundation.element);
+    }
+
+    const cells = [];
+    for (let i = 4; i < 8; i += 1) {
+      const cell = new Cell();
+      cell.moveTo(10 + (85 * i), 10);
+      cells.push(cell);
+
+      // Make these visible by adding to DOM
+      document.body.append(cell.element);
+    }
+
+    let grabbed = new Grabbed();
+
+    const deck = [];
+
+    // initialize list of cards
+    SUITS.forEach(suit => {
+      RANKS.forEach(rank => {
+        const card = new Card(suit, rank);
+        document.body.append(card.element);
+
+        // move all cards to an arbitrary point in the center
+        // of the tableau, so we can get a "dealing" animation
+        card.moveTo(500, 500);
+
+        deck.push(card);
+      });
+    });
+
+    const attemptToPlayOnFoundation = card => {
+      for (let i = 0; i < foundations.length; i += 1) {
+        const foundation = foundations[i];
+
+        if (foundation.validPlay(card)) {
+          const parent = foundation.lastCard;
+          card.setParent(parent);
+          card.animateTo(parent.x, parent.y);
+
+          // if we have a valid play, return from this function;
+          // no need to look further
+          break;
+        }
+      }
+
+      // TODO: check win condition here
+    };
+
+    deck.forEach(card => {
+      card.element.addEventListener('mousedown', e => {
+        e.preventDefault();
+
+        // this gets global click position
+        const { x, y } =  e;
+
+        grabbed.child = card;
+        grabbed.setOffset({x, y});
+
+        console.log(`mousedown on ${card}`);
+
+        const delta = Date.now() - lastOnDownTimestamp;
+        const doubleClick = delta < 500;
+
+        // reset the timestamp that stores the last time the player clicked
+        // if the current click counts as "double", then set the timestamp way in the past
+        // otherwise you get a "3 click double click" because the 2nd/3rd clicks are too close together
+        lastOnDownTimestamp = doubleClick ? 0 : Date.now();
+
+        if (doubleClick) {
+          console.log('double click!');
+          grabbed.child = null;
+
+          attemptToPlayOnFoundation(card);
+        }
+      });
+    });
+
+    // shuffle deck
+    let currentIndex = deck.length;
+    let randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex !== 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [deck[currentIndex], deck[randomIndex]] = [deck[randomIndex], deck[currentIndex]];
+    }
+
+    // deal cards
+    let delay = 0;
+    let index = 0;
+    while (deck.length) {
+      const card = deck.pop();
+      const cascade = cascades[index % cascades.length];
+      const lastCard = cascade.lastCard;
+
+      lastCard.child = card;
+      card.parent = lastCard;
+      card.zIndex = index;
+
+      // wait(delay).then();
+      setTimeout(() => {
+        card.animateTo(lastCard.x, lastCard.y + card.offset);
+      }, delay);
+
+      delay += 10; // 100ms looks nice
+      index += 1;
+    }
+
+    document.body.addEventListener('mousemove', e => {
+      e.preventDefault();
+
+      if (!grabbed.hasCards) {
+        return;
+      }
+
+      // this gets global click position
+      const { x, y } =  e;
+
+      grabbed.moveTo({x, y});
+    });
+
+    document.body.addEventListener('mouseup', e => {
+      e.preventDefault();
+
+      if (!grabbed.hasCards) {
+        return;
+      }
+
+      let valid = false;
+      const card = grabbed.child;
+
+      // check foundations
+      for (let i = 0; i < foundations.length; i += 1) {
+        const foundation = foundations[i];
+
+        // only allow placement in foundation if a valid play, and
+        // player is holding a single card
+        if (grabbed.overlaps(foundation) && foundation.validPlay(card) && !card.child) {
+          valid = true;
+
+          console.log(`dropping ${card} on foundation #${i}`);
+
+          card.setParent(foundation);
+          card.animateTo(foundation.x, foundation.y);
+
+          // valid play, so break out of the loop checking other foundations
+          break;
+        }
+      }
+
+      // check cells
+      for (let i = 0; i < cells.length; i += 1) {
+        const cell = cells[i];
+
+        // only allow placemnt in a cell if the cell is empty and
+        // player is holding a single card
+        if (grabbed.overlaps(cell) && !cell.hasCards && !card.child) {
+          valid = true;
+
+          console.log(`dropping ${card} on cell #${i}`);
+
+          card.setParent(cell);
+          card.animateTo(cell.x, cell.y);
+
+          // valid play, so break out of the loop checking other cells
+          break;
+        }
+      }
+
+      // check cascades
+      for (let i = 0; i < cascades.length; i += 1) {
+        const cascade = cascades[i];
+
+        if (grabbed.overlaps(cascade) && cascade.validPlay(card)) {
+          valid = true;
+
+          console.log(`dropping ${card} on cascade #${i}`);
+
+          // TODO: perhaps move the animation, etc. to the `setParent` method
+          // could also deal with the z-index problem there
+          const lastCard = cascade.lastCard;
+
+          card.setParent(lastCard);
+          card.animateTo(lastCard.x, lastCard.y + cascade.overlapOffset);
+
+          // valid play, so break out of the loop checking other cells
+          break;
+        }
+      }
+
+      // if we got this far, that means no valid move was made,
+      // so the card(s) can go back to their original position
+      if (!valid) {
+        console.log('invalid move; returning card(s) to original position');
+        const card = grabbed.child;
+
+        // TODO: need to make a "location" property or something
+        // so that we don't add an offset for foundations/cells
+        grabbed.animateTo({
+          x: card.parent.x,
+          y: card.parent.y + grabbed.overlapOffset
+        });
+      }
+
+      grabbed.child = null;
+    });
+  </script>
+
+  <!--
+    css box-shadow examples:
+
+    box-shadow: rgba(240, 46, 170, 0.4) 0px 5px,
+rgba(240, 46, 170, 0.3) 0px 10px,
+rgba(240, 46, 170, 0.2) 0px 15px,
+rgba(240, 46, 170, 0.1) 0px 20px,
+rgba(240, 46, 170, 0.05) 0px 25px;
+
+
+
+box-shadow: rgb(85, 91, 255) 0px 0px 0px 3px,
+rgb(31, 193, 27) 0px 0px 0px 6px,
+rgb(255, 217, 19) 0px 0px 0px 9px,
+rgb(255, 156, 85) 0px 0px 0px 12px,
+rgb(255, 85, 85) 0px 0px 0px 15px;
+
+
+box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+
+   -->
+</body>
+</html>
