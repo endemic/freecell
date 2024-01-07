@@ -1,4 +1,4 @@
-class Grabbed {
+class Grabbed extends Stack {
   // record the offset where the card was picked up,
   // so clicking/touching the card doesn't cause it to "jump"
   pointerOffset = { x: 0, y: 0 };
@@ -36,6 +36,7 @@ class Grabbed {
     let last = this.child;
     let offset = 0;
 
+    // TODO: update to use `children()` generator
     do {
       last.moveTo(this.x, this.y + offset);
 
@@ -54,6 +55,7 @@ class Grabbed {
     let offset = 0;
     let delay = 0;
 
+    // TODO: update to use `children()` generator
     do {
       // some freaking JS garbage
       // https://reactgo.com/javascript-settimeout-for-loop/
@@ -91,5 +93,16 @@ class Grabbed {
     }
 
     return true; // Collision detected
+  }
+
+  // sets the `child` prop of the `grabbed` object, and adjusts each card's z-index
+  grab(card) {
+    this.child = card;
+
+    let index = 52; // highest possible z-index for a 52 card deck
+    for (let card of this.children()) {
+      card.zIndex = index;
+      index += 1;
+    }
   }
 }

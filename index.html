@@ -127,14 +127,6 @@
       card.element.addEventListener('mousedown', e => {
         e.preventDefault();
 
-        // this gets global click position
-        const { x, y } =  e;
-
-        grabbed.child = card;
-        grabbed.setOffset({x, y});
-
-        console.log(`mousedown on ${card}`);
-
         const delta = Date.now() - lastOnDownTimestamp;
         const doubleClick = delta < 500;
 
@@ -144,11 +136,18 @@
         lastOnDownTimestamp = doubleClick ? 0 : Date.now();
 
         if (doubleClick) {
-          console.log('double click!');
-          grabbed.child = null;
-
+          console.log(`double click! attempt to play ${card} on foundations`);
           attemptToPlayOnFoundation(card);
+          return;
         }
+
+        // this gets global click position
+        const { x, y } =  e;
+
+        grabbed.grab(card);
+        grabbed.setOffset({x, y});
+
+        console.log(`mousedown on ${card}`);
       });
     });
 
@@ -262,6 +261,9 @@
           const lastCard = cascade.lastCard;
 
           card.setParent(lastCard);
+
+          // this seems to have a race condition
+          // TODO: lol no it just doesn't animate the child cards
           card.animateTo(lastCard.x, lastCard.y + cascade.overlapOffset);
 
           // valid play, so break out of the loop checking other cells
@@ -274,6 +276,10 @@
       if (!valid) {
         console.log('invalid move; returning card(s) to original position');
         const card = grabbed.child;
+
+        // TODO: need to realign zindex on child cards;
+        // make an inverse of "lastCard" method, a "firstParent" method
+        // which gets the stack object, which we can then call `alignZIndex` on
 
         // TODO: need to make a "location" property or something
         // so that we don't add an offset for foundations/cells

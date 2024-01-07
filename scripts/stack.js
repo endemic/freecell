@@ -39,6 +39,17 @@ class Stack {
     return `${this.type} stack`;
   }
 
+  // generator to easily loop thru all child cards
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*
+  *children() {
+    let card = this.child;
+
+    while (card) {
+      yield card;
+      card = card.child;
+    }
+  }
+
   moveTo(x, y) {
     this.x = x;
     this.y = y;
@@ -75,31 +86,16 @@ class Stack {
         point.y < this.y + this.height;
   }
 
-  // return the card in a stack of cards that was touched
-  // this method is also used for general collision detection
-  // (e.g. if player dropped card[s] over a stack)
-  touchedStack(point) {
-    if (!this.hasCards) {
-      return this.touched(point);
-    }
+  // increment all z-indices for cards in this stack
+  // such that they overlap correctly
+  alignZIndex(startIndex) {
+    startIndex ||= 0;
+    let card = this.child;
 
-    let card = this;
-
-    do {
-      // cards under other cards only have `cardOffset` of touchable space
-      let height = card.child ? this.cardOffset : card.height;
-
-      if (point.x > card.x && point.x < card.x + card.width &&
-          point.y > card.y && point.y < card.y + height &&
-          // only allow face up cards, or face down cards with no cards on top
-          (card.faceUp || !card.child)) {
-        return card;
-      }
-
-      // look at the next card
+    while (card) {
+      card.zIndex = startIndex;
+      startIndex += 1;
       card = card.child;
-    } while (card);
-
-    return false;
+    }
   }
 }

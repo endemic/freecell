@@ -58,10 +58,27 @@ class Card {
     return `${this.rank} ${this.suit}`;
   }
 
+  // generator to easily loop thru all child cards
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*
+  *children() {
+    let card = this.child;
+
+    while (card) {
+      yield card;
+      card = card.child;
+    }
+  }
+
   addChild(card) {
     this.child = card;
+    card.parent = this;
 
-    // TODO: update z-index on all children so they overlap each other correctly
+    // update z-index on all subsequent cards
+    let index = this.zIndex;
+    for (let card of this.children()) {
+      index += 1;
+      card.zIndex = index;
+    }
   }
 
   setParent(newParent) {
@@ -69,13 +86,30 @@ class Card {
     if (this.parent) {
       this.parent.child = null;
     }
-  
+
     newParent.child = this;
     this.parent = newParent;
+
+    // update z-index to be above parent
+    let index = this.parent.zIndex + 1;
+    this.zIndex = index;
+
+    // and on all subsequent cards
+    for (let card of this.children()) {
+      index += 1;
+      card.zIndex = index;
+    }
   }
 
-  set zIndex(number) {
-    this.element.style.zIndex = number;
+  /**
+   * @param {any} index
+   */
+  set zIndex(index) {
+    this.element.style.zIndex = index;
+  }
+
+  get zIndex() {
+    return parseInt(this.element.style.zIndex, 10);
   }
 
   moveTo(x, y) {

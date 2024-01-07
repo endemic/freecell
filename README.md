@@ -7,4 +7,11 @@ with no animation indicating the action. Similarly when turning cards from a tal
 ## TODO
 
 - [ ] Method to add a child card to a cascade, which animates moving the card to its correct position, and sets the z-index on all the child cards such that they overlap correctly.
-- [ ] Set z-index on grabbed cards (including children) to be a high value, so they are displayed on top of other cards
+- [x] Set z-index on grabbed cards (including children) to be a high value, so they are displayed on top of other cards
+- [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
+- [ ] Add status bar with timer/allowed cards you can grab
+- [ ] Add menu bar
+- [ ] Copy resizing code
+- [ ] Add transparent canvas background which is resized same as tableau
+- [ ] Don't grab until the card is actually moved?
+- [ ] BUG: sometimes when dropping grabbed cards, the children don't finish animating to place; the transform is correctly set, but the x,y values are wrong; perhaps a race condition
