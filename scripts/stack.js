@@ -1,4 +1,6 @@
 class Stack {
+  type = 'stack';
+
   child = null;
 
   // position/size values are set externally by
@@ -10,6 +12,11 @@ class Stack {
   height = 100;
 
   element = null;
+
+  zIndex = 0;
+
+  // when positioning child cards, this is how far they overlap
+  offset = 25;
 
   constructor(type) {
     this.type = type;
@@ -59,6 +66,13 @@ class Stack {
       this.element.style.transition = 'translate 0ms linear';
       this.element.style.translate = `${this.x}px ${this.y}px 0px`;
     }
+
+    let offset = this.offset;
+    // move child cards
+    for (let card of this.children()) {
+      card.moveTo(this.x, this.y + offset);
+      offset += this.offset;
+    }
   }
 
   get size() {
@@ -69,7 +83,7 @@ class Stack {
     // Add vertical size if there is more than one card in the stack
     while (card && card.child) {
       // if cards in play piles are still face down, draw them closer together
-      let offset = card.faceUp ? this.cardOffset : this.cardOffset / 4;
+      let offset = card.faceUp ? this.offset : this.offset / 4;
 
       height += offset;
 
@@ -78,6 +92,17 @@ class Stack {
 
     return { width, height };
   }
+
+  set size({width, height}) {
+    this.width = width;
+    this.height = height;
+
+    console.log(`setting ${this.type} size: ${width}, ${height}`);
+
+    this.element.style.width = `${this.width}px`;
+    this.element.style.height = `${this.height}px`;
+  }
+
 
   contains(point) {
     return point.x > this.x &&
@@ -88,14 +113,12 @@ class Stack {
 
   // increment all z-indices for cards in this stack
   // such that they overlap correctly
-  alignZIndex(startIndex) {
-    startIndex ||= 0;
-    let card = this.child;
+  resetZIndex() {
+    let index = 0;
 
-    while (card) {
-      card.zIndex = startIndex;
-      startIndex += 1;
-      card = card.child;
+    for (let card of this.children()) {
+      card.zIndex = index;
+      index += 1;
     }
   }
 }

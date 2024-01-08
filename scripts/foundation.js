@@ -1,4 +1,6 @@
 class Foundation extends Stack {
+  type = 'foundation';
+
   constructor() {
     super();
 
@@ -23,10 +25,22 @@ class Foundation extends Stack {
     return false;
   }
 
+  // TODO: determine if implementing _only_ a getter in a child class also
+  // removes the setter as well
   get size() {
     return {
       width: this.width,
       height: this.height
     };
+  }
+
+  set size({width, height}) {
+    this.width = width;
+    this.height = height;
+
+    console.log(`setting ${this.type} size: ${width}, ${height}`);
+
+    this.element.style.width = `${this.width}px`;
+    this.element.style.height = `${this.height}px`;
   }
 }

@@ -1,10 +1,12 @@
 class Grabbed extends Stack {
+  type = 'grabbed';
+
   // record the offset where the card was picked up,
   // so clicking/touching the card doesn't cause it to "jump"
   pointerOffset = { x: 0, y: 0 };
 
   // offset between cards in a stack, so we can see the rank/suit
-  overlapOffset = 25;
+  offset = 25;
 
   // position of the card(s)
   x = 0;
@@ -33,16 +35,12 @@ class Grabbed extends Stack {
     }
 
     // move child cards
-    let last = this.child;
     let offset = 0;
 
-    // TODO: update to use `children()` generator
-    do {
-      last.moveTo(this.x, this.y + offset);
-
-      offset += this.overlapOffset;
-      last = last.child;
-    } while (last);
+    for (let card of this.children()) {
+      card.moveTo(this.x, this.y + offset);
+      offset += this.offset;
+    }
   }
 
   animateTo(point) {
@@ -51,22 +49,21 @@ class Grabbed extends Stack {
     }
 
     // move child cards
-    let card = this.child;
     let offset = 0;
     let delay = 0;
 
-    // TODO: update to use `children()` generator
-    do {
-      // some freaking JS garbage
-      // https://reactgo.com/javascript-settimeout-for-loop/
-      ((card, point, offset) => {
-        setTimeout(() => card.animateTo(point.x, point.y + offset), delay);
-      })(card, point, offset);
+    for (let card of this.children()) {
+      ((card, point, offset, delay) => {
+        // this isn't wokriong
+        // wait(delay).then(() => card.animateTo(point.x, point.y + offset));
+        setTimeout(() => {
+          card.animateTo(point.x, point.y + offset);
+        }, delay);
+      })(card, point, offset, delay);
 
-      offset += this.overlapOffset;
+      offset += this.offset;
       delay += 50;
-      card = card.child;
-    } while (card);
+    }
   }
 
   get size() {
@@ -101,6 +98,7 @@ class Grabbed extends Stack {
 
     let index = 52; // highest possible z-index for a 52 card deck
     for (let card of this.children()) {
+      console.log(`setting z-index of grabbed card ${card} to be ${index}`);
       card.zIndex = index;
       index += 1;
     }

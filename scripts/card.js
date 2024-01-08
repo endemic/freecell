@@ -127,6 +127,7 @@ class Card {
     // https://www.cssportal.com/css-cubic-bezier-generator/
     this.element.style.transition = 'translate 250ms cubic-bezier( 0.175, 0.885, 0.32, 1.275 )';
     this.element.style.translate = `${this.x}px ${this.y}px 0px`;
+    console.log(`animating to ${x}, ${y}`);
   }
 
   flip() {
@@ -154,6 +155,16 @@ class Card {
     };
   }
 
+  set size({width, height}) {
+    this.width = width;
+    this.height = height;
+
+    console.log(`setting card size: ${width}, ${height}`);
+
+    this.element.style.width = `${this.width}px`;
+    this.element.style.height = `${this.height}px`;
+  }
+
   get color() {
     if (this.suit === 'hearts' || this.suit === 'diamonds') {
       return 'red';
@@ -168,7 +179,20 @@ class Card {
     return this.allRanks.indexOf(this.rank) - this.allRanks.indexOf(b.rank);
   }
 
-  resize() {
-    // TODO
+  get childrenInSequence() {
+    // if no children, there's a sequence by default
+    if (!this.child) {
+      return true;
+    }
+
+    // if card is same color as previous, or the rank difference is greater than 1,
+    // then the subsequent cards are not in sequence
+    for (let card of this.children()) {
+      if (card.parent.color === card.color || card.diff(card.parent) !== -1) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

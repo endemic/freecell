@@ -49,6 +49,12 @@
   <script src="scripts/foundation.js"></script>
 
   <script>
+    const wait = ms => {
+      return new Promise(resolve => {
+        setTimeout(resolve, ms);
+      });
+    };
+
     const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
     const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
 
@@ -90,6 +96,7 @@
     let grabbed = new Grabbed();
 
     const deck = [];
+    const cards = [];
 
     // initialize list of cards
     SUITS.forEach(suit => {
@@ -102,6 +109,7 @@
         card.moveTo(500, 500);
 
         deck.push(card);
+        cards.push(card);
       });
     });
 
@@ -141,6 +149,12 @@
           return;
         }
 
+        // only allow alternating sequences of cards to be picked up
+        if (!card.childrenInSequence) {
+          console.log(`can't pick up ${card}, not a sequence!`);
+          return;
+        }
+
         // this gets global click position
         const { x, y } =  e;
 
@@ -175,7 +189,7 @@
 
       lastCard.child = card;
       card.parent = lastCard;
-      card.zIndex = index;
+      card.zIndex = Math.floor(index / cascades.length);
 
       // wait(delay).then();
       setTimeout(() => {
@@ -262,9 +276,8 @@
 
           card.setParent(lastCard);
 
-          // this seems to have a race condition
-          // TODO: lol no it just doesn't animate the child cards
-          card.animateTo(lastCard.x, lastCard.y + cascade.overlapOffset);
+          // TODO: animate child cards -- TODO: grabbed.drop() function
+          card.animateTo(lastCard.x, lastCard.y + cascade.offset);
 
           // valid play, so break out of the loop checking other cells
           break;
@@ -277,20 +290,98 @@
         console.log('invalid move; returning card(s) to original position');
         const card = grabbed.child;
 
-        // TODO: need to realign zindex on child cards;
-        // make an inverse of "lastCard" method, a "firstParent" method
-        // which gets the stack object, which we can then call `alignZIndex` on
-
         // TODO: need to make a "location" property or something
         // so that we don't add an offset for foundations/cells
         grabbed.animateTo({
           x: card.parent.x,
-          y: card.parent.y + grabbed.overlapOffset
+          y: card.parent.y + grabbed.offset
         });
+
+        // this is kind of redundant, but handles setting the z-index
+        // for all child cards; possible TODO to refactor
+        wait(250).then(() => card.setParent(card.parent))
       }
 
       grabbed.child = null;
     });
+
+    const onResize = () => {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const aspectRatio = 4 / 3;
+      const scale = window.devicePixelRatio;
+
+      // playable area, where cards will be drawn
+      let tableauWidth;
+      let tableauHeight;
+
+      if (windowWidth / windowHeight > aspectRatio) {
+        // wider than it is tall; use the window height to calculate tableau width
+        tableauWidth = windowHeight * aspectRatio;
+        tableauHeight = windowHeight;
+      } else {
+        // taller than it is wide; use window width to calculate tableau height
+        tableauHeight = windowWidth / aspectRatio;
+        tableauWidth = windowWidth;
+      }
+
+      let windowMargin = (windowWidth - tableauWidth) / 2;
+
+      // tweak these values as necessary
+      let cardMargin = (5 / 605) * tableauWidth;
+
+      // cards _should_ be 75x100
+      let cardWidth = (70 / 605) * tableauWidth;
+      let cardHeight = (93.333 / 454) * tableauHeight;
+      let cardOffset = cardHeight / 4; // e.g. 25px
+
+      // enumerate over all cards/stacks in order to set their width/height
+      for (let group of [grabbed, cells, foundations, cascades, cards]) {
+        if (Array.isArray(group)) {
+          // if (group[0].type === 'foundation') {
+          //   debugger;
+          // }
+          for (let item of group) {
+            item.size = {
+              width: cardWidth,
+              height: cardHeight
+            };
+
+            item.offset = cardOffset;
+          }
+        } else {
+          group.size = {
+            width: cardWidth,
+            height: cardHeight
+          };
+
+          group.offset = cardOffset;
+        }
+      }
+
+      const top = cardMargin;
+      const left = windowMargin + cardMargin;
+
+      // foundations on the left
+      foundations.forEach((f, i) => {
+        f.moveTo(left + (cardWidth + cardMargin) * i, top);
+      });
+
+      // cells are on the right; the (i + 4) allows space for foundations
+      cells.forEach((c, i) => {
+        c.moveTo(left + (cardWidth + cardMargin) * (i + 4), top)
+      });
+
+      cascades.forEach((c, i) => {
+         // allows space for cells/foundation
+        c.moveTo(windowMargin + cardMargin + (cardWidth + cardMargin) * i, top + cardHeight + cardMargin)
+      });
+    };
+
+    window.addEventListener('resize', onResize);
+
+    // initial resize
+    onResize();
   </script>
 
   <!--

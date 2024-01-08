@@ -1,6 +1,5 @@
 class Cascade extends Stack {
-  // this should probably be put in the Stack class
-  overlapOffset = 25;
+  type = 'cascade';
 
   get size() {
     if (!this.child) {
@@ -16,6 +15,7 @@ class Cascade extends Stack {
     let last = this.child;
     let count = 0;
 
+    // TODO: use `this.children()` generator
     while (last?.child) {
       height += this.overlapOffset;
       last = last.child;

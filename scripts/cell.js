@@ -1,4 +1,6 @@
 class Cell extends Stack {
+  type = 'cell';
+
   constructor() {
     super();
 

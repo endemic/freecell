@@ -6,12 +6,16 @@ with no animation indicating the action. Similarly when turning cards from a tal
 
 ## TODO
 
+- [ ] Get card overlap offsets and delayed animation working
+- [ ] Animate highlight when card is placed in foundation
 - [ ] Method to add a child card to a cascade, which animates moving the card to its correct position, and sets the z-index on all the child cards such that they overlap correctly.
 - [x] Set z-index on grabbed cards (including children) to be a high value, so they are displayed on top of other cards
 - [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
 - [ ] Add status bar with timer/allowed cards you can grab
 - [ ] Add menu bar
 - [ ] Copy resizing code
+  * foundations aren't getting resized for some reason
 - [ ] Add transparent canvas background which is resized same as tableau
 - [ ] Don't grab until the card is actually moved?
-- [ ] BUG: sometimes when dropping grabbed cards, the children don't finish animating to place; the transform is correctly set, but the x,y values are wrong; perhaps a race condition
+- [x] Ensure lower z-index is set on cards placed in cells/foundations, such that dragged cards don't go "under"
+- [x] Ensure that when grabbed cards have an invalid move, and are moved back to their parent, their z-indices are reset back _down_ as well
