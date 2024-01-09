@@ -54,11 +54,7 @@ class Grabbed extends Stack {
 
     for (let card of this.children()) {
       ((card, point, offset, delay) => {
-        // this isn't wokriong
-        // wait(delay).then(() => card.animateTo(point.x, point.y + offset));
-        setTimeout(() => {
-          card.animateTo(point.x, point.y + offset);
-        }, delay);
+        wait(delay).then(() => card.animateTo(point.x, point.y + offset));
       })(card, point, offset, delay);
 
       offset += this.offset;
@@ -102,5 +98,33 @@ class Grabbed extends Stack {
       card.zIndex = index;
       index += 1;
     }
+  }
+
+  // Drop a series of cards on a target, setting the parent/etc. property, and animating them in place
+  drop(target) {
+    const card = this.child;
+
+    if (!target) {
+      target = card.parent;
+    }
+
+    // Don't add card overlap if dropping on base stack
+    let offset = this.offset;
+    if (['cascade', 'foundation', 'cell'].includes(target.type)) {
+      offset = 0;
+    }
+
+    console.log(`dropping on ${target.type}`);
+
+    this.animateTo({
+      x: target.x,
+      y: target.y + offset
+    });
+
+    // this is kind of redundant if not setting a new parent,
+    // but handles updating card z-indices correctly
+    // the `wait` allows for the cards to finish animating so they don't
+    // ease underneath neighboring cascades
+    wait(250).then(() => card.setParent(target));
   }
 }

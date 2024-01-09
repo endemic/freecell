@@ -165,41 +165,6 @@
       });
     });
 
-    // shuffle deck
-    let currentIndex = deck.length;
-    let randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex !== 0) {
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [deck[currentIndex], deck[randomIndex]] = [deck[randomIndex], deck[currentIndex]];
-    }
-
-    // deal cards
-    let delay = 0;
-    let index = 0;
-    while (deck.length) {
-      const card = deck.pop();
-      const cascade = cascades[index % cascades.length];
-      const lastCard = cascade.lastCard;
-
-      lastCard.child = card;
-      card.parent = lastCard;
-      card.zIndex = Math.floor(index / cascades.length);
-
-      // wait(delay).then();
-      setTimeout(() => {
-        card.animateTo(lastCard.x, lastCard.y + card.offset);
-      }, delay);
-
-      delay += 10; // 100ms looks nice
-      index += 1;
-    }
-
     document.body.addEventListener('mousemove', e => {
       e.preventDefault();
 
@@ -253,8 +218,7 @@
 
           console.log(`dropping ${card} on cell #${i}`);
 
-          card.setParent(cell);
-          card.animateTo(cell.x, cell.y);
+          grabbed.drop(cell);
 
           // valid play, so break out of the loop checking other cells
           break;
@@ -270,14 +234,7 @@
 
           console.log(`dropping ${card} on cascade #${i}`);
 
-          // TODO: perhaps move the animation, etc. to the `setParent` method
-          // could also deal with the z-index problem there
-          const lastCard = cascade.lastCard;
-
-          card.setParent(lastCard);
-
-          // TODO: animate child cards -- TODO: grabbed.drop() function
-          card.animateTo(lastCard.x, lastCard.y + cascade.offset);
+          grabbed.drop(cascade.lastCard);
 
           // valid play, so break out of the loop checking other cells
           break;
@@ -287,21 +244,11 @@
       // if we got this far, that means no valid move was made,
       // so the card(s) can go back to their original position
       if (!valid) {
-        console.log('invalid move; returning card(s) to original position');
-        const card = grabbed.child;
-
-        // TODO: need to make a "location" property or something
-        // so that we don't add an offset for foundations/cells
-        grabbed.animateTo({
-          x: card.parent.x,
-          y: card.parent.y + grabbed.offset
-        });
-
-        // this is kind of redundant, but handles setting the z-index
-        // for all child cards; possible TODO to refactor
-        wait(250).then(() => card.setParent(card.parent))
+        console.log('invalid move; dropping card(s) on original position');
+        grabbed.drop();
       }
 
+      // TODO: add this to `grabbed.drop`
       grabbed.child = null;
     });
 
@@ -382,6 +329,40 @@
 
     // initial resize
     onResize();
+
+    // shuffle deck
+    let currentIndex = deck.length;
+    let randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex !== 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [deck[currentIndex], deck[randomIndex]] = [deck[randomIndex], deck[currentIndex]];
+    }
+
+    // deal cards
+    let delay = 0;
+    let offset = 0;
+    let index = 0;
+    while (deck.length) {
+      const card = deck.pop();
+      const cascade = cascades[index % cascades.length];
+      const lastCard = cascade.lastCard;
+
+      card.setParent(lastCard);
+
+      ((card, lastCard, offset, delay) => {
+        wait(delay).then(() => card.animateTo(lastCard.x, lastCard.y + offset));
+      })(card, lastCard, offset, delay);
+
+      delay += 10; // 50ms looks nice
+      offset = index < 7 ? 0 : card.offset;
+      index += 1;
+    }
   </script>
 
   <!--
