@@ -12,6 +12,8 @@ class Grabbed extends Stack {
   x = 0;
   y = 0;
 
+  moved = false;
+
   // pointer to the card(s) being moved
   child = null;
 
@@ -27,6 +29,8 @@ class Grabbed extends Stack {
   }
 
   moveTo(point) {
+    this.moved = true;
+
     this.x = point.x - this.pointerOffset.x;
     this.y = point.y - this.pointerOffset.y;
 
@@ -103,28 +107,35 @@ class Grabbed extends Stack {
   // Drop a series of cards on a target, setting the parent/etc. property, and animating them in place
   drop(target) {
     const card = this.child;
+    // if no explicit target, assume we're dropping back
+    // on the original parent
+    target = target || card.parent;
 
-    if (!target) {
-      target = card.parent;
+    console.log(`dropping on ${target.type || 'another card'}`);
+
+    if (this.moved) {
+      // Don't add card overlap if dropping on base stack
+      let offset = this.offset;
+      if (['cascade', 'foundation', 'cell'].includes(target.type)) {
+        offset = 0;
+      }
+  
+      this.animateTo({
+        x: target.x,
+        y: target.y + offset
+      });
+  
+      // this is kind of redundant if not setting a new parent,
+      // but handles updating card z-indices correctly
+      // the `wait` allows for the cards to finish animating so they don't
+      // ease underneath neighboring cascades
+      wait(250).then(() => card.setParent(target));
+    } else {
+      // if card hasn't moved at all, we can just reset the z-index
+      card.setParent(target);
     }
 
-    // Don't add card overlap if dropping on base stack
-    let offset = this.offset;
-    if (['cascade', 'foundation', 'cell'].includes(target.type)) {
-      offset = 0;
-    }
-
-    console.log(`dropping on ${target.type}`);
-
-    this.animateTo({
-      x: target.x,
-      y: target.y + offset
-    });
-
-    // this is kind of redundant if not setting a new parent,
-    // but handles updating card z-indices correctly
-    // the `wait` allows for the cards to finish animating so they don't
-    // ease underneath neighboring cascades
-    wait(250).then(() => card.setParent(target));
+    this.child = null;
+    this.moved = false;
   }
 }

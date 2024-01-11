@@ -22,6 +22,9 @@ class Card {
   // when positioning child cards, this is how far they overlap
   offset = 25;
 
+  // flag whether or not a card is moving around
+  animating = false;
+
   // this value changes depending on where the card is dropped;
   // it affects behavior when card is clicked/dragged
   location = null;
@@ -124,10 +127,13 @@ class Card {
     this.x = x;
     this.y = y;
 
+    this.animating = true;
+
     // https://www.cssportal.com/css-cubic-bezier-generator/
     this.element.style.transition = 'translate 250ms cubic-bezier( 0.175, 0.885, 0.32, 1.275 )';
     this.element.style.translate = `${this.x}px ${this.y}px 0px`;
-    console.log(`animating to ${x}, ${y}`);
+
+    wait(250).then(() => this.animating = false);
   }
 
   flip() {
