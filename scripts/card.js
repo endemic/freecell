@@ -72,6 +72,14 @@ class Card {
     }
   }
 
+  get childCount() {
+    let count = 0;
+    for (let card of this.children()) {
+      count += 1;
+    }
+    return count;
+  }
+
   addChild(card) {
     this.child = card;
     card.parent = this;

@@ -155,6 +155,12 @@
           return;
         }
 
+        // only allow a certain number of cards to be picked up
+        if (card.childCount >= grabbableCards()) {
+          console.log(`You can only pick up ${grabbableCards()} cards!`);
+          return;
+        }
+
         // this gets global click position
         const { x, y } =  e;
 
