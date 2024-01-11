@@ -46,10 +46,10 @@ class Card {
    this.element.classList.add('card');
 
    const front = document.createElement('img');
-   front.src = `https://ganbaru.games/solitaire/images/${this.suit}/${this.rank}.png`;
+   front.src = `images/${this.suit}/${this.rank}.png`;
    front.classList.add('front');
    const back = document.createElement('img');
-   back.src = `https://ganbaru.games/solitaire/images/backs/one.png`;
+   back.src = `images/backs/one.png`;
    back.classList.add('back');
 
    this.element.append(front, back);
