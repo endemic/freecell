@@ -3,43 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Card Demo</title>
+  <title>FreeCell</title>
   <link rel="stylesheet" href="stylesheets/main.css">
 </head>
 <body>
-
-  <p>What would the advantages of a DOM-based game?</p>
-
-  <ol>
-    <li>Animations would be easy to implement without requiring
-      an always-running update loop.</li>
-    <li>Could animate cards either returning to their original location, or snapping into place</li>
-    <li>Could animate cards flipping in 3d space</li>
-    <li>Could create an animation for dropping cards on a foundation</li>
-  </ol>
-
-  <p>disadvantages</p>
-
-  <ol>
-    <li>implementing card waterfall would be a PITA -- would have to overlay a canvas and import images
-      from the DOM -- would have to use &lt;img> tags for card fronts/backs (https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement)</li>
-    <li>alternative idea: background is a &lt;canvas>, and every update draws the card image at its current position</li>
-  </ol>
-
-  <p>how would we handle displaying card cascades? would need to recursively move child cards</p>
-
-
-  <p>how would piles, foundations, etc. work in this version of the game?
-    I'm imagining that since I want to attach event listeners to each card, the card itself would need to know
-    what stack it's in. Otherwise we'd need to have an invisible "stack" object that would layer itself on top
-    of all its contents.
-  </p>
+  <canvas></canvas>
 
   <!-- https://tobiasahlin.com/blog/how-to-animate-box-shadow/ -->
 
-  <style type="text/css">
-
-  </style>
 
   <script src="scripts/card.js"></script>
   <script src="scripts/stack.js"></script>
@@ -127,6 +98,14 @@
       });
     };
 
+    // Electronic versions of the game allow you to pick up multiple 
+    // cards as a shortcut for putting them into open cells one at a time
+    // You're always allowed to move at least one card, so the "formula"
+    // is (open cells + 1)
+    const grabbableCards = () => {
+      return cells.reduce((total, cell) => total + (cell.hasCards ? 0 : 1), 1);
+    };
+
     const attemptToPlayOnFoundation = card => {
       for (let i = 0; i < foundations.length; i += 1) {
         const foundation = foundations[i];
@@ -145,7 +124,9 @@
         }
       }
 
-      // TODO: check win condition here
+      if (checkWin()) {
+        console.log('congratz! u won!');
+      }
     };
 
     deck.forEach(card => {
@@ -180,7 +161,7 @@
         grabbed.grab(card);
         grabbed.setOffset({x, y});
 
-        console.log(`mousedown on ${card}`);
+        console.log(`mousedown on ${card}, offset: ${x}, ${y}`);
       });
     });
 
@@ -193,6 +174,13 @@
 
       // this gets global click position
       const { x, y } =  e;
+
+      // TODO: only move if distance is > some small wiggle room
+      // to allow for easier double-click to play
+      const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+      // need to take offset into consideration here
+      // console.log(dist({x, y}, grabbed))
 
       grabbed.moveTo({x, y});
     });
@@ -380,6 +368,8 @@
       index += 1;
     }
   </script>
+
+  <script src="scripts/card-waterfall.js"></script>
 
   <!--
     css box-shadow examples:
