@@ -181,13 +181,6 @@
       // this gets global click position
       const { x, y } =  e;
 
-      // TODO: only move if distance is > some small wiggle room
-      // to allow for easier double-click to play
-      const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
-
-      // need to take offset into consideration here
-      // console.log(dist({x, y}, grabbed))
-
       grabbed.moveTo({x, y});
     });
 
@@ -207,7 +200,7 @@
 
         // only allow placement in foundation if a valid play, and
         // player is holding a single card
-        if (grabbed.overlaps(foundation) && foundation.validPlay(card) && !card.child) {
+        if (grabbed.overlaps(foundation) && foundation.validPlay(card) && !card.hasCards) {
           valid = true;
 
           console.log(`dropping ${card} on foundation #${i}`);
@@ -225,7 +218,7 @@
 
         // only allow placemnt in a cell if the cell is empty and
         // player is holding a single card
-        if (grabbed.overlaps(cell) && !cell.hasCards && !card.child) {
+        if (grabbed.overlaps(cell) && !cell.hasCards && !card.hasCards) {
           valid = true;
 
           console.log(`dropping ${card} on cell #${i}`);
@@ -285,53 +278,54 @@
       let windowMargin = (windowWidth - tableauWidth) / 2;
 
       // tweak these values as necessary
-      let cardMargin = (5 / 605) * tableauWidth;
+      let margin = (5 / 605) * tableauWidth;
 
       // cards _should_ be 75x100
-      let cardWidth = (70 / 605) * tableauWidth;
-      let cardHeight = (93.333 / 454) * tableauHeight;
-      let cardOffset = cardHeight / 4; // e.g. 25px
+      let width = (70 / 605) * tableauWidth;
+      let height = (93.333 / 454) * tableauHeight;
+      let offset = height / 4; // e.g. 25px
 
       // enumerate over all cards/stacks in order to set their width/height
-      for (let group of [grabbed, cells, foundations, cascades, cards]) {
-        if (Array.isArray(group)) {
-          // if (group[0].type === 'foundation') {
-          //   debugger;
-          // }
-          for (let item of group) {
-            item.size = {
-              width: cardWidth,
-              height: cardHeight
-            };
-
-            item.offset = cardOffset;
-          }
-        } else {
-          group.size = {
-            width: cardWidth,
-            height: cardHeight
-          };
-
-          group.offset = cardOffset;
-        }
+      for (const cascade of cascades) {
+        cascade.size = { width, height };
+        cascade.offset = offset;
       }
 
-      const top = cardMargin;
-      const left = windowMargin + cardMargin;
+      for (const foundation of foundations) {
+        foundation.size = { width, height };
+        foundation.offset = 0;
+      }
+
+      for (const cell of cells) {
+        cell.size = { width, height };
+        cell.offset = 0;
+      }
+
+      for (const card of cards) {
+        card.size = { width, height };
+        card.offset = offset;
+      }
+
+      grabbed.size = { width, height };
+      grabbed.offset = offset;
+
+      // Layout code
+      const top = margin;
+      const left = windowMargin + margin;
 
       // foundations on the left
       foundations.forEach((f, i) => {
-        f.moveTo(left + (cardWidth + cardMargin) * i, top);
+        f.moveTo(left + (width + margin) * i, top);
       });
 
       // cells are on the right; the (i + 4) allows space for foundations
       cells.forEach((c, i) => {
-        c.moveTo(left + (cardWidth + cardMargin) * (i + 4), top)
+        c.moveTo(left + (width + margin) * (i + 4), top)
       });
 
       cascades.forEach((c, i) => {
          // allows space for cells/foundation
-        c.moveTo(windowMargin + cardMargin + (cardWidth + cardMargin) * i, top + cardHeight + cardMargin)
+        c.moveTo(windowMargin + margin + (width + margin) * i, top + height + margin)
       });
     };
 

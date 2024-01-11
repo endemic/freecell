@@ -4,6 +4,8 @@ class Grabbed extends Stack {
   // record the offset where the card was picked up,
   // so clicking/touching the card doesn't cause it to "jump"
   pointerOffset = { x: 0, y: 0 };
+  
+  origin = { x: 0, y: 0 };
 
   // offset between cards in a stack, so we can see the rank/suit
   offset = 25;
@@ -24,11 +26,22 @@ class Grabbed extends Stack {
   setOffset(point) {
     const card = this.child;
 
+    this.origin = point;
+
     this.pointerOffset.x = point.x - card.x;
     this.pointerOffset.y = point.y - card.y;
   }
 
   moveTo(point) {
+    // only move if distance is > some small wiggle room
+    // to allow for easier double-click to play
+    const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+    let d = dist(point, this.origin);
+    if (d < 5) {
+      console.log(`didn't move enough: ${d}`);
+      return;
+    }
+
     this.moved = true;
 
     this.x = point.x - this.pointerOffset.x;

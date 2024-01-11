@@ -6,7 +6,7 @@ with no animation indicating the action. Similarly when turning cards from a tal
 
 ## TODO
 
-- [ ] Get card overlap offsets and delayed animation working
+- [x] Get card overlap offsets and delayed animation working
 - [ ] Animate highlight when card is placed in foundation
 - [x] Method to add a child card to a cascade, which animates moving the card to its correct position, and sets the z-index on all the child cards such that they overlap correctly.
 - [x] Set z-index on grabbed cards (including children) to be a high value, so they are displayed on top of other cards
@@ -14,10 +14,14 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [ ] Add status bar with timer/allowed cards you can grab
 - [ ] Add menu bar
 - [x] Copy resizing code
-  * foundations aren't getting resized for some reason
 - [ ] Add transparent canvas background which is resized same as tableau
 - [ ] Don't grab until the card is actually moved?
 - [x] Ensure lower z-index is set on cards placed in cells/foundations, such that dragged cards don't go "under"
 - [x] Ensure that when grabbed cards have an invalid move, and are moved back to their parent, their z-indices are reset back _down_ as well
 - [x] BUG: when double-clicking Ace from a cascade, it is played to a foundation, but not removed from the cascade; `cascade.lastCard` still points to it
-- [ ] Verify "size" objects
+- [ ] Verify "size" objects & collision detection
+- [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
+- [ ] double-click to play is jankity -- doesn't always work because you have to keep the mouse perfectly still
+- [x] coming back after a while (after screensaver activates?) spreads placed cards in foundations/cells...
+  * This might be a macOS-specific thing; multiple resize events are happening in the logs
+  * ~~however, if I resize manually, the cards placed in foundations don't spread...~~ that's a lie, it totally does

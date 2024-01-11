@@ -67,7 +67,7 @@ class Stack {
       this.element.style.translate = `${this.x}px ${this.y}px 0px`;
     }
 
-    let offset = this.offset;
+    let offset = 0;
     // move child cards
     for (let card of this.children()) {
       card.moveTo(this.x, this.y + offset);
@@ -78,16 +78,21 @@ class Stack {
   get size() {
     let height = this.height;
     let width = this.width;
-    let card = this.child;
 
-    // Add vertical size if there is more than one card in the stack
-    while (card && card.child) {
-      // if cards in play piles are still face down, draw them closer together
+    // this is janky -- need to omit the first card, as it will
+    // perfectly overlap the stack
+    let cardCount = 0;
+
+    // determine height of stack + all cascading cards
+    for (let card of this.children()) {
+      // if cards in stacks are still face down, draw them closer together
       let offset = card.faceUp ? this.offset : this.offset / 4;
 
-      height += offset;
+      if (cardCount > 0) {
+        height += offset;
+      }
 
-      card = card.child;
+      cardCount += 1;
     }
 
     return { width, height };
@@ -97,10 +102,10 @@ class Stack {
     this.width = width;
     this.height = height;
 
-    console.log(`setting ${this.type} size: ${width}, ${height}`);
-
     this.element.style.width = `${this.width}px`;
     this.element.style.height = `${this.height}px`;
+
+    console.log(`setting ${this.type} size: ${width}, ${height}`);
   }
 
 
