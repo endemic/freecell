@@ -4,7 +4,7 @@ class Grabbed extends Stack {
   // record the offset where the card was picked up,
   // so clicking/touching the card doesn't cause it to "jump"
   pointerOffset = { x: 0, y: 0 };
-  
+
   origin = { x: 0, y: 0 };
 
   // offset between cards in a stack, so we can see the rank/suit
@@ -43,6 +43,7 @@ class Grabbed extends Stack {
     }
 
     this.moved = true;
+    document.body.style.cursor = 'grabbing';
 
     this.x = point.x - this.pointerOffset.x;
     this.y = point.y - this.pointerOffset.y;
@@ -53,7 +54,6 @@ class Grabbed extends Stack {
 
     // move child cards
     let offset = 0;
-
     for (let card of this.children()) {
       card.moveTo(this.x, this.y + offset);
       offset += this.offset;
@@ -132,12 +132,12 @@ class Grabbed extends Stack {
       if (['cascade', 'foundation', 'cell'].includes(target.type)) {
         offset = 0;
       }
-  
+
       this.animateTo({
         x: target.x,
         y: target.y + offset
       });
-  
+
       // this is kind of redundant if not setting a new parent,
       // but handles updating card z-indices correctly
       // the `wait` allows for the cards to finish animating so they don't
@@ -150,5 +150,7 @@ class Grabbed extends Stack {
 
     this.child = null;
     this.moved = false;
+
+    document.body.style.cursor = 'grab';
   }
 }
