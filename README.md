@@ -15,13 +15,16 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [ ] Add menu bar
 - [x] Copy resizing code
 - [ ] Add transparent canvas background which is resized same as tableau
-- [ ] Don't grab until the card is actually moved?
+- [x] Don't grab until the card is actually moved?
 - [x] Ensure lower z-index is set on cards placed in cells/foundations, such that dragged cards don't go "under"
 - [x] Ensure that when grabbed cards have an invalid move, and are moved back to their parent, their z-indices are reset back _down_ as well
 - [x] BUG: when double-clicking Ace from a cascade, it is played to a foundation, but not removed from the cascade; `cascade.lastCard` still points to it
-- [ ] Verify "size" objects & collision detection
+- [ ] Verify "size" objects & collision detection (!!!)
 - [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
-- [ ] double-click to play is jankity -- doesn't always work because you have to keep the mouse perfectly still
+- [x] double-click to play is jankity -- doesn't always work because you have to keep the mouse perfectly still
 - [x] coming back after a while (after screensaver activates?) spreads placed cards in foundations/cells...
   * This might be a macOS-specific thing; multiple resize events are happening in the logs
   * ~~however, if I resize manually, the cards placed in foundations don't spread...~~ that's a lie, it totally does
+- [ ] change double-click to require clicks to be close to each other -- otherwise you get some weird double-clicks where they are actually farther apart and it seems unintentional
+
+  game is now winnable!

@@ -158,8 +158,8 @@ class Card {
   }
 
   flash() {
-    this.element.style.animation = '';
-    this.element.style.animation = 'burst 400ms';
+    this.element.style.animation = 'burst 250ms';
+    wait(250).then(() => this.element.style.animation = '');
   }
 
   get size () {

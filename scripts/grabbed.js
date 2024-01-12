@@ -35,7 +35,6 @@ class Grabbed extends Stack {
   moveTo(point) {
     // only move if distance is > some small wiggle room
     // to allow for easier double-click to play
-    const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     let d = dist(point, this.origin);
     if (d < 5) {
       console.log(`didn't move enough: ${d}`);
@@ -65,7 +64,7 @@ class Grabbed extends Stack {
       return;
     }
 
-    // move child cards
+    // animate child cards
     let offset = 0;
     let delay = 0;
 

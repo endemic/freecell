@@ -25,6 +25,7 @@
         setTimeout(resolve, ms);
       });
     };
+    const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 
     const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
     const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
@@ -98,7 +99,7 @@
       });
     };
 
-    // Electronic versions of the game allow you to pick up multiple 
+    // Electronic versions of the game allow you to pick up multiple
     // cards as a shortcut for putting them into open cells one at a time
     // You're always allowed to move at least one card, so the "formula"
     // is (open cells + 1)
@@ -115,6 +116,8 @@
 
           card.setParent(parent);
           card.animateTo(parent.x, parent.y);
+          // TODO: make this magic number representing animation speed a constant somewhere
+          wait(150).then(() => card.flash());
 
           console.log(`playing ${card} on foundation #${i}`);
 
@@ -191,6 +194,8 @@
         return;
       }
 
+      // TODO: if a successful drop returns early from this function, and we're
+      // not checking `valid` anywhere else, I think we can remove it
       let valid = false;
       const card = grabbed.child;
 
@@ -206,6 +211,7 @@
           console.log(`dropping ${card} on foundation #${i}`);
 
           grabbed.drop(foundation.lastCard); // either a card or the foundation itself
+          wait(150).then(() => card.flash());
 
           // valid play, so break out of the loop checking other foundations
           return;
