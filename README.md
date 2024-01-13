@@ -14,7 +14,7 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [ ] Add status bar with timer/allowed cards you can grab
 - [ ] Add menu bar
 - [x] Copy resizing code
-- [ ] Add transparent canvas background which is resized same as tableau
+- [x] Add transparent canvas background which is resized same as tableau
   * canvas is there, need to size it properly
 - [x] Don't grab until the card is actually moved?
 - [x] Ensure lower z-index is set on cards placed in cells/foundations, such that dragged cards don't go "under"
@@ -29,6 +29,7 @@ with no animation indicating the action. Similarly when turning cards from a tal
   * ~~however, if I resize manually, the cards placed in foundations don't spread...~~ that's a lie, it totally does
 - [ ] change double-click to require clicks to be close to each other -- otherwise you get some weird double-clicks where they are actually farther apart and it seems unintentional
 - [ ] Add undo stack
-- [ ] Get touch input
+  -> need to add animation to undo stack
+- [x] Get touch input
 
   game is now winnable!

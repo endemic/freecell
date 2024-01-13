@@ -110,6 +110,12 @@ const wait = ms => {
       if (foundation.validPlay(card)) {
         let parent = foundation.lastCard;  // either a card or the foundation itself
 
+        undoStack.push({
+          card,
+          parent,
+          oldParent: card.parent
+        });
+
         card.setParent(parent);
         card.animateTo(parent.x, parent.y);
         // TODO: make this magic number representing animation speed a constant somewhere
@@ -227,9 +233,6 @@ const wait = ms => {
       return;
     }
 
-    // TODO: if a successful drop returns early from this function, and we're
-    // not checking `valid` anywhere else, I think we can remove it
-    let valid = false;
     const card = grabbed.child;
 
     // check foundations
@@ -239,12 +242,18 @@ const wait = ms => {
       // only allow placement in foundation if a valid play, and
       // player is holding a single card
       if (grabbed.overlaps(foundation) && foundation.validPlay(card) && !card.hasCards) {
-        valid = true;
+        let parent = foundation.lastCard;
+
+        undoStack.push({
+          card,
+          parent,
+          oldParent: card.parent
+        });
+
+        grabbed.drop(parent); // either a card or the foundation itself
+        wait(150).then(() => card.flash());
 
         console.log(`dropping ${card} on foundation #${i}`);
-
-        grabbed.drop(foundation.lastCard); // either a card or the foundation itself
-        wait(150).then(() => card.flash());
 
         // valid play, so break out of the loop checking other foundations
         return;
@@ -258,11 +267,15 @@ const wait = ms => {
       // only allow placemnt in a cell if the cell is empty and
       // player is holding a single card
       if (grabbed.overlaps(cell) && !cell.hasCards && !card.hasCards) {
-        valid = true;
-
-        console.log(`dropping ${card} on cell #${i}`);
+        undoStack.push({
+          card,
+          cell,
+          oldParent: card.parent
+        });
 
         grabbed.drop(cell);
+
+        console.log(`dropping ${card} on cell #${i}`);
 
         // valid play, so return out of the loop checking other cells
         return;
@@ -274,11 +287,17 @@ const wait = ms => {
       const cascade = cascades[i];
 
       if (grabbed.overlaps(cascade) && cascade.validPlay(card)) {
-        valid = true;
+        let parent = cascade.parent;
 
-        console.log(`dropping ${card} on cascade #${i}`);
+        undoStack.push({
+          card,
+          parent,
+          oldParent: card.parent
+        });
 
         grabbed.drop(cascade.lastCard);
+
+        console.log(`dropping ${card} on cascade #${i}`);
 
         // valid play, so return out of the loop checking other cells
         return;
@@ -287,11 +306,9 @@ const wait = ms => {
 
     // if we got this far, that means no valid move was made,
     // so the card(s) can go back to their original position
-    if (!valid) {
-      console.log('invalid move; dropping card(s) on original position');
+    console.log('invalid move; dropping card(s) on original position');
 
-      grabbed.drop();
-    }
+    grabbed.drop();
   };
 
   const onResize = () => {
@@ -300,6 +317,14 @@ const wait = ms => {
     const aspectRatio = 4 / 3;
     const scale = window.devicePixelRatio;
     const canvas = document.querySelector('#canvas');
+
+    // canvas is as large as the window;
+    canvas.style.width = `${windowWidth}px`;
+    canvas.style.height = `${windowHeight}px`;
+
+    // account for high DPI screens
+    canvas.width = Math.floor(windowWidth * scale);
+    canvas.height = Math.floor(windowHeight * scale);
 
     // playable area, where cards will be drawn
     let tableauWidth;
