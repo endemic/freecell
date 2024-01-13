@@ -7,10 +7,7 @@
   <link rel="stylesheet" href="stylesheets/main.css">
 </head>
 <body>
-  <canvas></canvas>
-
-  <!-- https://tobiasahlin.com/blog/how-to-animate-box-shadow/ -->
-
+  <canvas id="canvas"></canvas>
 
   <script src="scripts/card.js"></script>
   <script src="scripts/stack.js"></script>
@@ -25,7 +22,22 @@
         setTimeout(resolve, ms);
       });
     };
+
     const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+    const getPoint = event => {
+      if (event.changedTouches && event.changedTouches.length > 0) {
+        return {
+          x: event.changedTouches[0].clientX,
+          y: event.changedTouches[0].clientY
+        };
+      }
+
+      return {
+        x: event.x,
+        y: event.y
+      };
+    }
 
     const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
     const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
@@ -34,6 +46,9 @@
     // this val is set in `onDown` function; if it is called again rapidly
     // (e.g. within 500ms) then the interaction counts as a double-click
     let lastOnDownTimestamp = Date.now();
+
+    // array to hold inverse move data
+    const undoStack = [];
 
     const cascades = [];
     for (let i = 0; i < 8; i += 1) {
@@ -65,9 +80,9 @@
       document.body.append(cell.element);
     }
 
-    let grabbed = new Grabbed();
+    const grabbed = new Grabbed();
 
-    const deck = [];
+    // array to hold refs to each card obj
     const cards = [];
 
     // initialize list of cards
@@ -78,9 +93,9 @@
 
         // move all cards to an arbitrary point in the center
         // of the tableau, so we can get a "dealing" animation
+        // TODO: determine this point in the `resize` function
         card.moveTo(500, 500);
 
-        deck.push(card);
         cards.push(card);
       });
     });
@@ -132,8 +147,44 @@
       }
     };
 
-    deck.forEach(card => {
-      card.element.addEventListener('mousedown', e => {
+    const deal = () => {
+      // shuffle deck
+      let currentIndex = cards.length;
+      let randomIndex;
+
+      // While there remain elements to shuffle.
+      while (currentIndex !== 0) {
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [cards[currentIndex], cards[randomIndex]] = [cards[randomIndex], cards[currentIndex]];
+      }
+
+      let delay = 0;
+      let offset = 0;
+
+      // deal cards
+      for (let index = 0; index < cards.length; index += 1) {
+        // TODO: ensure all parent/child relationships are reset
+        const card = cards[index];
+        const cascade = cascades[index % cascades.length];
+        const lastCard = cascade.lastCard;
+
+        card.setParent(lastCard);
+
+        ((card, lastCard, offset, delay) => {
+          wait(delay).then(() => card.animateTo(lastCard.x, lastCard.y + offset));
+        })(card, lastCard, offset, delay);
+
+        delay += 10; // 50ms looks nice
+        offset = index < 7 ? 0 : card.offset;
+      };
+    };
+
+    cards.forEach(card => {
+      const onDown = e => {
         e.preventDefault();
 
         const delta = Date.now() - lastOnDownTimestamp;
@@ -164,30 +215,31 @@
           return;
         }
 
-        // this gets global click position
-        const { x, y } =  e;
+        const point = getPoint(e);
 
         grabbed.grab(card);
-        grabbed.setOffset({x, y});
+        grabbed.setOffset(point);
 
-        console.log(`mousedown on ${card}, offset: ${x}, ${y}`);
-      });
+        console.log(`onDown on ${card}, offset: ${point.x}, ${point.y}`);
+      };
+
+      card.element.addEventListener('mousedown', onDown);
+      card.element.addEventListener('touchstart', onDown);
     });
 
-    document.body.addEventListener('mousemove', e => {
+    const onMove = e => {
       e.preventDefault();
 
       if (!grabbed.hasCards) {
         return;
       }
 
-      // this gets global click position
-      const { x, y } =  e;
+      const point = getPoint(e);
 
-      grabbed.moveTo({x, y});
-    });
+      grabbed.moveTo(point);
+    };
 
-    document.body.addEventListener('mouseup', e => {
+    const onUp = e => {
       e.preventDefault();
 
       if (!grabbed.hasCards) {
@@ -259,13 +311,14 @@
 
         grabbed.drop();
       }
-    });
+    };
 
     const onResize = () => {
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
       const aspectRatio = 4 / 3;
       const scale = window.devicePixelRatio;
+      const canvas = document.querySelector('#canvas');
 
       // playable area, where cards will be drawn
       let tableauWidth;
@@ -335,48 +388,46 @@
       });
     };
 
+    const undo = e => {
+      // return unless the keypress is meta/contrl + z (for undo)
+      if (!(e.metaKey || e.ctrlKey) || e.key !== 'z') {
+        return;
+      }
+
+      if (this.undoStack.length < 1) {
+        console.log('No previously saved moves on the undo stack.');
+        return;
+      }
+
+      // get card state _before_ the most recent move
+      let {card, parent, target} = this.undoStack.pop();
+
+      // remove destination
+      target.child = null;
+
+      // reset the original parent <-> child card link
+      card.parent = parent;
+      parent.child = card;
+
+      // TODO: animate the card to its place
+    }
+
+    document.body.addEventListener('mousemove', onMove);
+    document.body.addEventListener('touchmove', onMove);
+    document.body.addEventListener('mouseup', onUp);
+    document.body.addEventListener('touchend', onUp);
+
     window.addEventListener('resize', onResize);
 
     // initial resize
     onResize();
 
-    // shuffle deck
-    let currentIndex = deck.length;
-    let randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex !== 0) {
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [deck[currentIndex], deck[randomIndex]] = [deck[randomIndex], deck[currentIndex]];
-    }
-
-    // deal cards
-    let delay = 0;
-    let offset = 0;
-    let index = 0;
-    while (deck.length) {
-      const card = deck.pop();
-      const cascade = cascades[index % cascades.length];
-      const lastCard = cascade.lastCard;
-
-      card.setParent(lastCard);
-
-      ((card, lastCard, offset, delay) => {
-        wait(delay).then(() => card.animateTo(lastCard.x, lastCard.y + offset));
-      })(card, lastCard, offset, delay);
-
-      delay += 10; // 50ms looks nice
-      offset = index < 7 ? 0 : card.offset;
-      index += 1;
-    }
+    deal();
   </script>
 
   <script src="scripts/card-waterfall.js"></script>
 
+  <!-- https://tobiasahlin.com/blog/how-to-animate-box-shadow/ -->
   <!--
     css box-shadow examples:
 
