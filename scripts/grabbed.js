@@ -5,23 +5,10 @@ class Grabbed extends Stack {
   // so clicking/touching the card doesn't cause it to "jump"
   pointerOffset = { x: 0, y: 0 };
 
+  // ivars to tell us whether the user clicked
+  // and moved cards far enough to actually show movement
   origin = { x: 0, y: 0 };
-
-  // offset between cards in a stack, so we can see the rank/suit
-  offset = 25;
-
-  // position of the card(s)
-  x = 0;
-  y = 0;
-
   moved = false;
-
-  // pointer to the card(s) being moved
-  child = null;
-
-  get hasCards() {
-    return this.child !== null;
-  }
 
   setOffset(point) {
     const card = this.child;
@@ -79,12 +66,29 @@ class Grabbed extends Stack {
   }
 
   get size() {
-    return this.child.size;
+    return {
+      width: this.width,
+      height: this.height
+    };
+  }
+
+  set size({width, height}) {
+    this.width = width;
+    this.height = height;
+
+    console.log(`setting ${this.type} size: ${width}, ${height}`);
   }
 
   // returns true if the "grabbed" bounding box overlaps
   // the passed arg bounding box
   overlaps(target) {
+    if (isNaN(target.size.width) ||
+        isNaN(target.size.height) ||
+        isNaN(this.size.height) ||
+        isNaN(this.size.height)) {
+          // cascades have NaN value for height?
+      debugger;
+    }
     // Calculate the sides of the boxes
     let left1 = target.x;
     let right1 = target.x + target.size.width;
@@ -95,6 +99,8 @@ class Grabbed extends Stack {
     let right2 = this.x + this.size.width;
     let top2 = this.y;
     let bottom2 = this.y + this.size.height;
+
+    console.log(`comparing collision of ${target.size.width}x${target.size.height} vs. ${this.size.width}x${this.size.height}`);
 
     // Check for collisions
     if (bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2) {

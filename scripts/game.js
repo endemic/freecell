@@ -28,6 +28,10 @@ const wait = ms => {
   // (e.g. within 500ms) then the interaction counts as a double-click
   let lastOnDownTimestamp = Date.now();
 
+  // stores the last click/touch point; used because double-clicks
+  // need to be close together
+  let previousPoint = { x: 0, y: 0};
+
   // array to hold inverse move data
   const undoStack = [];
 
@@ -174,13 +178,15 @@ const wait = ms => {
     const onDown = e => {
       e.preventDefault();
 
+      const point = getPoint(e);
       const delta = Date.now() - lastOnDownTimestamp;
-      const doubleClick = delta < 500;
+      const doubleClick = delta < 500 && dist(point, previousPoint) < 10;
 
       // reset the timestamp that stores the last time the player clicked
       // if the current click counts as "double", then set the timestamp way in the past
       // otherwise you get a "3 click double click" because the 2nd/3rd clicks are too close together
       lastOnDownTimestamp = doubleClick ? 0 : Date.now();
+      previousPoint = point;
 
       // can only double-click to play on a foundation
       // if card is last in a cascade/cell
@@ -201,8 +207,6 @@ const wait = ms => {
         console.log(`You can only pick up ${grabbableCards()} cards!`);
         return;
       }
-
-      const point = getPoint(e);
 
       grabbed.grab(card);
       grabbed.setOffset(point);
@@ -400,20 +404,20 @@ const wait = ms => {
       return;
     }
 
-    if (this.undoStack.length < 1) {
+    if (undoStack.length < 1) {
       console.log('No previously saved moves on the undo stack.');
       return;
     }
 
     // get card state _before_ the most recent move
-    let {card, parent, target} = this.undoStack.pop();
+    let {card, parent, oldParent} = undoStack.pop();
 
     // remove destination
-    target.child = null;
+    parent.child = null;
 
     // reset the original parent <-> child card link
-    card.parent = parent;
-    parent.child = card;
+    card.parent = oldParent;
+    oldParent.child = card;
 
     // TODO: animate the card to its place
   };
@@ -424,6 +428,7 @@ const wait = ms => {
   document.body.addEventListener('touchend', onUp);
 
   window.addEventListener('resize', onResize);
+  window.addEventListener('keydown', undo);
 
   // initial resize
   onResize();

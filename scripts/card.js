@@ -61,6 +61,10 @@ class Card {
     return `${this.rank} ${this.suit}`;
   }
 
+  get hasCards() {
+    return this.child !== null;
+  }
+
   // generator to easily loop thru all child cards
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*
   *children() {

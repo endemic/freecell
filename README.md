@@ -10,9 +10,6 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] Animate highlight when card is placed in foundation
 - [x] Method to add a child card to a cascade, which animates moving the card to its correct position, and sets the z-index on all the child cards such that they overlap correctly.
 - [x] Set z-index on grabbed cards (including children) to be a high value, so they are displayed on top of other cards
-- [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
-- [ ] Add status bar with timer/allowed cards you can grab
-- [ ] Add menu bar
 - [x] Copy resizing code
 - [x] Add transparent canvas background which is resized same as tableau
   * canvas is there, need to size it properly
@@ -20,16 +17,21 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] Ensure lower z-index is set on cards placed in cells/foundations, such that dragged cards don't go "under"
 - [x] Ensure that when grabbed cards have an invalid move, and are moved back to their parent, their z-indices are reset back _down_ as well
 - [x] BUG: when double-clicking Ace from a cascade, it is played to a foundation, but not removed from the cascade; `cascade.lastCard` still points to it
-- [ ] Verify "size" objects & collision detection (!!!)
-  * this seems to be causing a bug where double-clicking a card drops it on a foundation, but the card doesn't move
-- [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
 - [x] double-click to play is jankity -- doesn't always work because you have to keep the mouse perfectly still
 - [x] coming back after a while (after screensaver activates?) spreads placed cards in foundations/cells...
   * This might be a macOS-specific thing; multiple resize events are happening in the logs
   * ~~however, if I resize manually, the cards placed in foundations don't spread...~~ that's a lie, it totally does
-- [ ] change double-click to require clicks to be close to each other -- otherwise you get some weird double-clicks where they are actually farther apart and it seems unintentional
-- [ ] Add undo stack
-  -> need to add animation to undo stack
+- [x] change double-click to require clicks to be close to each other -- otherwise you get some weird double-clicks where they are actually farther apart and it seems unintentional
 - [x] Get touch input
 
-  game is now winnable!
+- [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
+- [ ] Add status bar with timer/allowed cards you can grab
+- [ ] Add menu bar
+- [ ] Add undo stack
+  -> need to add animation to undo stack
+- [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
+- [ ] Verify "size" objects & collision detection (!!!)
+  -> this seems to be causing a bug where double-clicking a card drops it on a foundation, but the card doesn't move
+  -> probably should add some tests for this
+- [ ] Scrollbars appear on the page; figure out what is causing them
+- [ ] Make cards taller, for better play on mobile; also need larger numbers/suits

@@ -2,31 +2,34 @@ class Cascade extends Stack {
   type = 'cascade';
 
   get size() {
-    if (!this.child) {
+    if (!this.hasCards) {
       return {
         width: this.width,
         height: this.height
       };
     }
 
-    const width = this.child.width; // all cards are the same width
-    let height = this.child.height;
+    const width = this.width; // all cards are the same width
+    let height = this.height;
 
-    let last = this.child;
-    let count = 0;
+    // first card completely overlaps the cascade,
+    // so we don't use its height value
+    let card = this.child;
 
-    // TODO: use `this.children()` generator
-    while (last?.child) {
-      height += this.overlapOffset;
-      last = last.child;
-
-      // TODO: remove this eventually
-      if (count++ > 50) {
-        throw new Error('Invalid parent/child card link.');
-      }
+    // Not actually using any data from child cards,
+    // just enumerating over them to determine height
+    for (let c of card.children()) {
+      height += this.offset;
     }
 
     return { width, height };
+  }
+
+  set size({width, height}) {
+    this.width = width;
+    this.height = height;
+
+    console.log(`setting ${this.type} size: ${width}, ${height}`);
   }
 
   validPlay (card) {
