@@ -120,8 +120,8 @@ const wait = ms => {
           oldParent: card.parent
         });
 
-        card.setParent(parent);
         card.animateTo(parent.x, parent.y);
+        wait(250).then(() => card.setParent(parent));
         // TODO: make this magic number representing animation speed a constant somewhere
         wait(150).then(() => card.flash());
 
@@ -350,8 +350,8 @@ const wait = ms => {
     let margin = (5 / 605) * tableauWidth;
 
     // cards _should_ be 75x100
-    let width = (70 / 605) * tableauWidth;
-    let height = (93.333 / 454) * tableauHeight;
+    let width = (75 / 605) * tableauWidth;
+    let height = (105 / 454) * tableauHeight;
     let offset = height / 4; // e.g. 25px
 
     // enumerate over all cards/stacks in order to set their width/height

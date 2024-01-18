@@ -17,6 +17,10 @@ class Grabbed extends Stack {
 
     this.pointerOffset.x = point.x - card.x;
     this.pointerOffset.y = point.y - card.y;
+
+    // sets the internal position representation, so it's not (0, 0)
+    this.x = point.x - this.pointerOffset.x;
+    this.y = point.y - this.pointerOffset.y;
   }
 
   moveTo(point) {
@@ -100,7 +104,7 @@ class Grabbed extends Stack {
     let top2 = this.y;
     let bottom2 = this.y + this.size.height;
 
-    console.log(`comparing collision of ${target.size.width}x${target.size.height} vs. ${this.size.width}x${this.size.height}`);
+    console.log(`comparing collision of ${target.size.width}x${target.size.height} @ (${target.x}, ${target.y}) vs. ${this.size.width}x${this.size.height}  @ (${this.x}, ${this.y})`);
 
     // Check for collisions
     if (bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2) {
