@@ -121,8 +121,8 @@ const wait = ms => {
         });
 
         card.animateTo(parent.x, parent.y);
+        // TODO: make these magic numbers representing animation speed a constant somewhere
         wait(250).then(() => card.setParent(parent));
-        // TODO: make this magic number representing animation speed a constant somewhere
         wait(150).then(() => card.flash());
 
         console.log(`playing ${card} on foundation #${i}`);
@@ -318,6 +318,7 @@ const wait = ms => {
   const onResize = () => {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
+
     const aspectRatio = 4 / 3;
     const scale = window.devicePixelRatio;
     const canvas = document.querySelector('#canvas');
@@ -347,12 +348,15 @@ const wait = ms => {
     let windowMargin = (windowWidth - tableauWidth) / 2;
 
     // tweak these values as necessary
-    let margin = (5 / 605) * tableauWidth;
+    let margin = (4 / 608) * tableauWidth;
 
-    // cards _should_ be 75x100
-    let width = (75 / 605) * tableauWidth;
-    let height = (105 / 454) * tableauHeight;
-    let offset = height / 4; // e.g. 25px
+    // if tableau is 608pt wide, then for 8 columns
+    // each column + margin should be 76
+
+    // cards are 72x104
+    let width = (72 / 608) * tableauWidth;
+    let height = (104 / 454) * tableauHeight;
+    let offset = height / 4; // e.g. 26px
 
     // enumerate over all cards/stacks in order to set their width/height
     for (const cascade of cascades) {
