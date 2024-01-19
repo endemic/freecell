@@ -1,4 +1,4 @@
-const wait = ms => {
+  const wait = ms => {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
     });
@@ -91,7 +91,7 @@ const wait = ms => {
     return foundations.every(f => {
       let count = 0;
 
-      for (let card of f.children()) {
+      for (let _card of f.children()) {
         count += 1;
       }
 
@@ -271,9 +271,11 @@ const wait = ms => {
       // only allow placemnt in a cell if the cell is empty and
       // player is holding a single card
       if (grabbed.overlaps(cell) && !cell.hasCards && !card.hasCards) {
+        let parent = cell;
+
         undoStack.push({
           card,
-          cell,
+          parent,
           oldParent: card.parent
         });
 
@@ -291,7 +293,7 @@ const wait = ms => {
       const cascade = cascades[i];
 
       if (grabbed.overlaps(cascade) && cascade.validPlay(card)) {
-        let parent = cascade.parent;
+        let parent = cascade.lastCard;
 
         undoStack.push({
           card,
@@ -299,7 +301,7 @@ const wait = ms => {
           oldParent: card.parent
         });
 
-        grabbed.drop(cascade.lastCard);
+        grabbed.drop(parent);
 
         console.log(`dropping ${card} on cascade #${i}`);
 
@@ -414,16 +416,18 @@ const wait = ms => {
     }
 
     // get card state _before_ the most recent move
-    let {card, parent, oldParent} = undoStack.pop();
+    let { card, parent, oldParent } = undoStack.pop();
 
-    // remove destination
+    // reverse the relationship; remove attachment from "new" parent
     parent.child = null;
 
     // reset the original parent <-> child card link
-    card.parent = oldParent;
-    oldParent.child = card;
+    card.setParent(oldParent);
 
-    // TODO: animate the card to its place
+    // animate the card to its original place
+    // TODO: need to handle vertical offset
+    // TODO: need to handle animating child cards
+    card.animateTo(oldParent.x, oldParent.y);
   };
 
   document.body.addEventListener('mousemove', onMove);
