@@ -22,6 +22,7 @@ const getPoint = event => {
 
 const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
 const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
+const DEBUG = false;
 
 // used for custom double-click/tap implementation
 // this val is set in `onDown` function; if it is called again rapidly
@@ -84,6 +85,20 @@ SUITS.forEach(suit => {
     cards.push(card);
   });
 });
+
+if (DEBUG) {
+  for (let i = 0; i < foundations.length; i += 1) {
+    let foundation = foundations[i];
+
+    // all cards
+    for (let j = 0; j < 13; j += 1) {
+      let card = cards[(13 * i) + j];
+      let parent = foundation.lastCard;
+      card.setParent(parent);
+      card.moveTo(parent.x, parent.y);
+    }
+  }
+}
 
 const checkWin = () => {
   // ensure that each foundation has 13 cards; we don't check for matching suit

@@ -34,5 +34,5 @@ with no animation indicating the action. Similarly when turning cards from a tal
   -> this seems to be causing a bug where double-clicking a card drops it on a foundation, but the card doesn't move
   -> probably should add some tests for this
   -> **breakthru** I think this is actually happening only on first move, before the `grabbed` object updates its position. If a card is clicked but not moved enough, `grabbed` stays at (0, 0), which would naturally overlap the first foundation (if the window is narrow enough). The `grabbed.drop` behavior changes based on whether the `moved` flag is set or not. I think the solution might be to update the `grabbed` object's position?
-- [ ] Scrollbars appear on the page; figure out what is causing them
+- [x] Scrollbars appear on the page; figure out what is causing them
 - [ ] Make cards taller, for better play on mobile; also need larger numbers/suits
