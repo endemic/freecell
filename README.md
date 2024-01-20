@@ -23,6 +23,7 @@ with no animation indicating the action. Similarly when turning cards from a tal
   * ~~however, if I resize manually, the cards placed in foundations don't spread...~~ that's a lie, it totally does
 - [x] change double-click to require clicks to be close to each other -- otherwise you get some weird double-clicks where they are actually farther apart and it seems unintentional
 - [x] Get touch input
+- [x] card waterfall
 
 - [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
 - [ ] Add status bar with timer/allowed cards you can grab
@@ -36,3 +37,5 @@ with no animation indicating the action. Similarly when turning cards from a tal
   -> **breakthru** I think this is actually happening only on first move, before the `grabbed` object updates its position. If a card is clicked but not moved enough, `grabbed` stays at (0, 0), which would naturally overlap the first foundation (if the window is narrow enough). The `grabbed.drop` behavior changes based on whether the `moved` flag is set or not. I think the solution might be to update the `grabbed` object's position?
 - [x] Scrollbars appear on the page; figure out what is causing them
 - [ ] Make cards taller, for better play on mobile; also need larger numbers/suits
+- [ ] add `targetPosition` prop or similar on cards/foundations, so we don't need to calculate offset when moving/animating
+- [ ] double-clicked cards moving to foundations still go "under" other cards; their z-indices aren't set high enough

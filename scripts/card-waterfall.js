@@ -4,7 +4,7 @@ const CardWaterfall = {
 
   start(callback) {
     // set callback function to run when waterfall is finished
-    this.callback = callback;
+    this.callback = callback || (() => {});
 
     // get the first card
     this.fallingCard = this.nextCard();

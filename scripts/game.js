@@ -22,7 +22,7 @@ const getPoint = event => {
 
 const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
 const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
-const DEBUG = true;
+const DEBUG = false;
 
 // used for custom double-click/tap implementation
 // this val is set in `onDown` function; if it is called again rapidly
@@ -35,6 +35,9 @@ let previousPoint = { x: 0, y: 0};
 
 // array to hold inverse move data
 const undoStack = [];
+
+// boolean which can be checked to short-circuit player interaction, etc.
+let gameOver = false;
 
 const cascades = [];
 for (let i = 0; i < 8; i += 1) {
@@ -142,14 +145,17 @@ const attemptToPlayOnFoundation = card => {
 
       console.log(`playing ${card} on foundation #${i}`);
 
-      // if we have a valid play, return from this function;
-      // no need to look further
-      break;
-    }
-  }
+      if (checkWin()) {
+        CardWaterfall.start(() => {
+          console.log('TODO: reset game state in this callback');
+          // reset();
+          // deal();
+        });
+      }
 
-  if (checkWin()) {
-    console.log('congratz! u won!');
+      // if we have a valid play, return from this function;
+      return;
+    }
   }
 };
 
@@ -181,7 +187,10 @@ const deal = () => {
     card.setParent(lastCard);
 
     ((card, lastCard, offset, delay) => {
-      wait(delay).then(() => card.animateTo(lastCard.x, lastCard.y + offset));
+      wait(delay).then(() => {
+        card.animateTo(lastCard.x, lastCard.y + offset);
+        card.resetZIndex();
+      });
     })(card, lastCard, offset, delay);
 
     delay += 10; // 50ms looks nice
@@ -273,6 +282,14 @@ const onUp = e => {
       wait(150).then(() => card.flash());
 
       console.log(`dropping ${card} on foundation #${i}`);
+
+      if (checkWin()) {
+        CardWaterfall.start(() => {
+          console.log('TODO: reset game state in this callback');
+          // reset();
+          // deal();
+        });
+      }
 
       // valid play, so break out of the loop checking other foundations
       return;

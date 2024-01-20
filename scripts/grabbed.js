@@ -135,6 +135,8 @@ class Grabbed extends Stack {
 
     console.log(`dropping on ${target.type || 'another card'}`);
 
+    card.setParent(target);
+
     if (this.moved) {
       // Don't add card overlap if dropping on base stack
       let offset = this.offset;
@@ -147,14 +149,12 @@ class Grabbed extends Stack {
         y: target.y + offset
       });
 
-      // this is kind of redundant if not setting a new parent,
-      // but handles updating card z-indices correctly
       // the `wait` allows for the cards to finish animating so they don't
-      // ease underneath neighboring cascades
-      wait(250).then(() => card.setParent(target));
+      // ease underneath neighboring cards
+      wait(250).then(() => card.resetZIndex());
     } else {
       // if card hasn't moved at all, we can just reset the z-index
-      card.setParent(target);
+      card.resetZIndex();
     }
 
     this.child = null;

@@ -85,15 +85,13 @@ class Card {
   }
 
   addChild(card) {
+    // remove old parent's reference to card, if necessary
+    if (card.parent) {
+      card.parent.child = null;
+    }
+
     this.child = card;
     card.parent = this;
-
-    // update z-index on all subsequent cards
-    let index = this.zIndex;
-    for (let card of this.children()) {
-      index += 1;
-      card.zIndex = index;
-    }
   }
 
   setParent(newParent) {
@@ -104,27 +102,6 @@ class Card {
 
     newParent.child = this;
     this.parent = newParent;
-
-    // update z-index to be above parent
-    let index = this.parent.zIndex + 1;
-    this.zIndex = index;
-
-    // and on all subsequent cards
-    for (let card of this.children()) {
-      index += 1;
-      card.zIndex = index;
-    }
-  }
-
-  /**
-   * @param {any} index
-   */
-  set zIndex(index) {
-    this.element.style.zIndex = index;
-  }
-
-  get zIndex() {
-    return parseInt(this.element.style.zIndex, 10);
   }
 
   moveTo(x, y) {
@@ -189,6 +166,26 @@ class Card {
     }
 
     return 'black';
+  }
+
+  set zIndex(index) {
+    this.element.style.zIndex = index;
+  }
+
+  get zIndex() {
+    return parseInt(this.element.style.zIndex, 10);
+  }
+
+  resetZIndex() {
+    // update z-index to be above parent
+    let index = this.parent.zIndex + 1;
+    this.zIndex = index;
+
+    // and on all subsequent cards
+    for (let card of this.children()) {
+      index += 1;
+      card.zIndex = index;
+    }
   }
 
   // returns this - b; e.g. 5 - 2 = 3
