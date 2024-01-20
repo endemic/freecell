@@ -1,80 +1,134 @@
-const canvas = document.querySelector('canvas');
-const context = canvas.getContext('2d');
+const CardWaterfall = {
+  fallingCard: null,
+  canvas: document.querySelector('canvas'),
 
-// TEST
-// let card = cards[0];
-// let img = card.element.children[0];
-// context.drawImage(img, 0, 0, card.width, card.height);
+  start(callback) {
+    // set callback function to run when waterfall is finished
+    this.callback = callback;
 
-// local variables used to hold reference to moving card,
-// as well as its speed (cards normally only store their (x,y) position)
-let movingCard;
+    // get the first card
+    this.fallingCard = this.nextCard();
 
-// not truly "random" -- weighted to negative, so cards have a
-// tendancy to fall to the left (where they can be visible for longer)
-const getRandomSign = () => Math.random() > 0.7 ? 1 : -1;
+    // put canvas in front of DOM elements
+    this.canvas.style.zIndex = 52;
 
-// assign a random speed to a falling card
-const getRandomVelocity = () => {
-  let v = {
-    x: (Math.random() * 4 + 1) * getRandomSign(),
-    y: -Math.random() * 4 + 3
-  };
+    // cancel animation on user interaction
+    this.canvas.addEventListener('click', this.stop.bind(this));
 
-  // TODO: figure out best velocity range
-  console.log(v);
+    // kick off animation loop
+    this.interval = window.setInterval(() => this.update(), 16);
+  },
 
-  return v;
-};
+  get randomSign() {
+    return Math.random() > 0.5 ? 1 : -1;
+  },
 
-const getNextFallingCard = () => {
-  // randomly choose foundation & pick top card off it
-  let f = foundations[Math.floor(Math.random() * foundations.length)];
+  get randomVelocity() {
+    const scaledCanvasWidth = parseInt(this.canvas.style.width, 10);
+    const scaledCanvasHeight = parseInt(this.canvas.style.height, 10);
 
-  let card = f.lastCard;
+    let x = scaledCanvasWidth * 0.003;
+    let y = scaledCanvasHeight * 0.005;
 
-  // detatch card
-  card.parent.child = null;
-  card.parent = null;
+    let v = {
+      x: ((Math.random() * x) + x) * this.randomSign,
+      y: ((Math.random() * y) + y) * -1
+    };
 
-  // `card` is an Object, so can assign arbitrary properties
-  card.velocity = getRandomVelocity();
+    console.log(v);
 
-  return card;
-};
+    return v;
+  },
 
-const animate = () => {
-  // start a new card if one hasn't been set
-  // start a new card if the existing one goes off screen
-  if (!movingCard || movingCard.x + movingCard.width < 0 || movingCard.x > canvas.width) {
-    movingCard = getNextFallingCard();
+  nextCard() {
+    // randomly choose foundation & pick top card off it
+    let randomFoundationIndex = Math.floor(Math.random() * foundations.length);
+    let f = foundations[randomFoundationIndex];
+
+    while (!f.hasCards) {
+      randomFoundationIndex = Math.floor(Math.random() * foundations.length);
+      f = foundations[randomFoundationIndex];
+
+      // if no more cards left, return a falsy value
+      if (!this.hasCards) {
+        return;
+      }
+    }
+
+    let card = f.lastCard;
+
+    // detatch card
+    card.parent.child = null;
+    card.parent = null;
+
+    // give random speed; `card` is an Object, so can assign arbitrary properties
+    card.velocity = this.randomVelocity;
+
+    return card;
+  },
+
+  update() {
+    const scaledCanvasWidth = parseInt(this.canvas.style.width, 10);
+    const scaledCanvasHeight = parseInt(this.canvas.style.height, 10);
+    const context = this.canvas.getContext('2d');
+
+    // pick next card if the existing one goes off screen
+    if (this.fallingCard.x + this.fallingCard.width < 0 ||
+        this.fallingCard.x > scaledCanvasWidth) {
+      this.fallingCard = this.nextCard();
+    }
+
+    let fallingCard = this.fallingCard;
+
+    // If we can't get the next card, that means we're out
+    if (!fallingCard) {
+      this.stop();
+
+      return;
+    }
+
+    context.drawImage(fallingCard.element.children[0], fallingCard.x, fallingCard.y, fallingCard.width, fallingCard.height);
+
+    const nextPosition = {
+      x: fallingCard.x + fallingCard.velocity.x,
+      y: fallingCard.y + fallingCard.velocity.y
+    };
+
+    // don't let the card go below the bottom edge of the screen
+    // TODO: this currently is broken for hidpi screens; canvas is actually 3x
+    if (nextPosition.y + fallingCard.height > scaledCanvasHeight) {
+      nextPosition.y = scaledCanvasHeight - fallingCard.height;
+
+      // "bounce" the card
+      fallingCard.velocity.y = -fallingCard.velocity.y * 0.85;
+    }
+
+    // Move card DOM element
+    fallingCard.moveTo(nextPosition.x, nextPosition.y);
+
+    // update card velocity w/ "gravity" acceleration
+    fallingCard.velocity.y += scaledCanvasHeight * 0.001; // 0.1%
+  },
+
+  get hasCards() {
+    return foundations.some(f => f.hasCards);
+  },
+
+  stop() {
+    // stop listening for interaction
+    this.canvas.removeEventListener('click', this.stop.bind(this));
+
+    // stop animation loop
+    window.clearInterval(this.interval);
+
+    // put canvas back "behind" DOM elements
+    this.canvas.style.zIndex = 0;
+
+    // erase drawn card trails
+    const context = this.canvas.getContext('2d');
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    console.log('running waterfall callback');
+    this.callback();
   }
-
-  context.drawImage(movingCard.element.children[0], movingCard.x, movingCard.y, movingCard.width, movingCard.height);
-
-  let nextPosition = {
-    x: movingCard.x + movingCard.velocity.x,
-    y: movingCard.y + movingCard.velocity.y
-  };
-
-  // don't let the card go below the bottom edge of the screen
-  if (nextPosition.y + movingCard.height > canvas.height) {
-    nextPosition.y = canvas.height - movingCard.height;
-
-    // "bounce" the card
-    movingCard.velocity.y = -movingCard.velocity.y * 0.8;
-  }
-
-  movingCard.moveTo(nextPosition.x, nextPosition.y);
-
-  // update card velocity w/ "gravity" acceleration
-  movingCard.velocity.y += 0.75;
 };
-
-if (DEBUG) {
-  // set canvas on top of all the other cards
-  canvas.style.zIndex = 100;
-
-  // TODO: store the interval ID in a variable, so it can be cancelled
-  window.setInterval(animate, 16);
-}

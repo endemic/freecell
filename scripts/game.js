@@ -22,7 +22,7 @@ const getPoint = event => {
 
 const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
 const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
-const DEBUG = false;
+const DEBUG = true;
 
 // used for custom double-click/tap implementation
 // this val is set in `onDown` function; if it is called again rapidly
@@ -90,7 +90,7 @@ if (DEBUG) {
   for (let i = 0; i < foundations.length; i += 1) {
     let foundation = foundations[i];
 
-    // all cards
+    // move all cards to winning positions
     for (let j = 0; j < 13; j += 1) {
       let card = cards[(13 * i) + j];
       let parent = foundation.lastCard;
@@ -456,4 +456,6 @@ window.addEventListener('keydown', undo);
 // initial resize
 onResize();
 
-deal();
+if (!DEBUG) {
+  deal();
+}
