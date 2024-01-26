@@ -138,10 +138,14 @@ const attemptToPlayOnFoundation = card => {
         oldParent: card.parent
       });
 
+      card.setParent(parent);
       card.animateTo(parent.x, parent.y);
-      // TODO: make these magic numbers representing animation speed a constant somewhere
-      wait(250).then(() => card.setParent(parent));
+
+      // show a brief "flash" when the card is close to the foundation
       wait(150).then(() => card.flash());
+
+      // Ensure card z-index is correct _after_ it animates
+      wait(250).then(() => card.resetZIndex());
 
       console.log(`playing ${card} on foundation #${i}`);
 
@@ -390,7 +394,7 @@ const onResize = () => {
   // cards are 72x104
   let width = (72 / 608) * tableauWidth;
   let height = (104 / 454) * tableauHeight;
-  let offset = height / 4; // e.g. 26px
+  let offset = height / 3.7; // ~28px
 
   // enumerate over all cards/stacks in order to set their width/height
   for (const cascade of cascades) {

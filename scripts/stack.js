@@ -42,6 +42,13 @@ class Stack {
     return last;
   }
 
+  get nextCardPoint() {
+    return {
+      x: this.x,
+      y: this.y
+    };
+  }
+
   toString() {
     return `${this.type} stack`;
   }

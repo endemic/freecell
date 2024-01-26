@@ -160,6 +160,13 @@ class Card {
     this.element.style.height = `${this.height}px`;
   }
 
+  get nextCardPoint() {
+    return {
+      x: this.x,
+      y: this.y + this.offset
+    };
+  }
+
   get color() {
     if (this.suit === 'hearts' || this.suit === 'diamonds') {
       return 'red';

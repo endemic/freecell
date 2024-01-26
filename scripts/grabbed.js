@@ -140,6 +140,9 @@ class Grabbed extends Stack {
     if (this.moved) {
       // Don't add card overlap if dropping on base stack
       let offset = this.offset;
+      // this doesn't work with dropping cards on a foundation
+      // TODO: maybe add a `stackType` prop type?
+      // problem: the first card in the cascade needs a 0px offset -- could handle that edge case here
       if (['cascade', 'foundation', 'cell'].includes(target.type)) {
         offset = 0;
       }
