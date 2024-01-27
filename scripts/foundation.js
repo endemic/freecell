@@ -6,7 +6,7 @@ class Foundation extends Stack {
 
     this.element = document.createElement('img');
     this.element.classList.add('foundation');
-    this.element.src = 'https://ganbaru.games/solitaire/images/backs/target.png';
+    this.element.src = 'images/backs/foundation.png';
   }
 
   validPlay(card) {

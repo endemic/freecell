@@ -104,7 +104,7 @@ class Grabbed extends Stack {
     let top2 = this.y;
     let bottom2 = this.y + this.size.height;
 
-    console.log(`comparing collision of ${target.size.width}x${target.size.height} @ (${target.x}, ${target.y}) vs. ${this.size.width}x${this.size.height}  @ (${this.x}, ${this.y})`);
+    // console.log(`comparing collision of ${target.size.width}x${target.size.height} @ (${target.x}, ${target.y}) vs. ${this.size.width}x${this.size.height}  @ (${this.x}, ${this.y})`);
 
     // Check for collisions
     if (bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2) {
@@ -140,14 +140,14 @@ class Grabbed extends Stack {
     if (this.moved) {
       let offset = this.offset;
 
-      // Don't add card overlap if dropping on a cascade without cards
-      // NOTE: cardCount is 1 instead of 0, due to line 138
-      if (target.type === 'cascade' && target.cardCount === 1) {
+      // Don't add card overlap if dropping on an empty cascade or cell
+      if (['cascade', 'cell'].includes(target.type)) {
         offset = 0;
       }
 
-      // don't add card overlap on foundations or cells; only a single card visible at a time
-      if (['foundation', 'cell'].includes(target.stackType)) {
+      // don't add card overlap on foundations; note that we use
+      // "stackType" here since cards can stack up on foundations
+      if (['foundation'].includes(target.stackType)) {
         offset = 0;
       }
 

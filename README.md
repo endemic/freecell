@@ -30,7 +30,7 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
 - [ ] Add status bar with timer/allowed cards you can grab
 - [ ] Add menu bar
-- [ ] Add undo stack
+- [x] Add undo stack
   -> need to add animation to undo stack
 - [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
 - [x] Verify "size" objects & collision detection (!!!)
@@ -38,7 +38,9 @@ with no animation indicating the action. Similarly when turning cards from a tal
   -> probably should add some tests for this
   -> **breakthru** I think this is actually happening only on first move, before the `grabbed` object updates its position. If a card is clicked but not moved enough, `grabbed` stays at (0, 0), which would naturally overlap the first foundation (if the window is narrow enough). The `grabbed.drop` behavior changes based on whether the `moved` flag is set or not. I think the solution might be to update the `grabbed` object's position?
 - [x] Scrollbars appear on the page; figure out what is causing them
-- [ ] Make cards taller, for better play on mobile; also need larger numbers/suits
+- [x] Make cards taller, for better play on mobile; also need larger numbers/suits
   * I think I prefer the "rounded" corners
 - [ ] add `targetPosition` prop or similar on cards/foundations, so we don't need to calculate offset when moving/animating
 - [x] double-clicked cards moving to foundations still go "under" other cards; their z-indices aren't set high enough
+- [x] fix undo to handle reverting multiple cards
+- [x] rework the background graphics for cells/foundations

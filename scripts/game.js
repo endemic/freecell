@@ -20,6 +20,12 @@ const getPoint = event => {
   };
 }
 
+const log = () => {
+  if (DEBUG) {
+    console.log(arguments);
+  }
+};
+
 const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
 const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
 const DEBUG = false;
@@ -457,13 +463,14 @@ const undo = e => {
   // reverse the relationship; remove attachment from "new" parent
   parent.child = null;
 
-  // reset the original parent <-> child card link
-  card.setParent(oldParent);
+  // we're cheating here and re-using logic from the `Grabbed` class
+  // to handle moving/animating cards back to their previous position
+  grabbed.grab(card);
 
-  // animate the card to its original place
-  // TODO: need to handle vertical offset
-  // TODO: need to handle animating child cards
-  card.animateTo(oldParent.x, oldParent.y);
+  // total cheat
+  grabbed.moved = true;
+
+  grabbed.drop(oldParent);
 };
 
 document.body.addEventListener('mousemove', onMove);

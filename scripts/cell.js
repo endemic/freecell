@@ -6,7 +6,7 @@ class Cell extends Stack {
 
     this.element = document.createElement('img');
     this.element.classList.add('cell');
-    this.element.src = 'https://ganbaru.games/solitaire/images/backs/target.png';
+    this.element.src = 'images/backs/cell.png';
   }
 
   get size() {
