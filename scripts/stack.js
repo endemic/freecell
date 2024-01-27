@@ -8,8 +8,8 @@ class Stack {
   x = 0;
   y = 0;
 
-  width = 75;
-  height = 100;
+  width = null;
+  height = null;
 
   element = null;
 
@@ -18,25 +18,29 @@ class Stack {
   // when positioning child cards, this is how far they overlap
   offset = 25;
 
-  constructor(type) {
-    this.type = type;
+  get stackType() {
+    return this.type;
   }
 
   get hasCards() {
     return this.child !== null;
   }
 
+  get cardCount() {
+    let count = 0;
+
+    for (let _card of this.children()) {
+      count += 1;
+    }
+
+    return count;
+  }
+
   get lastCard() {
     let last = this;
-    let count = 0;
 
     while (last?.child) {
       last = last.child;
-
-      // TODO: remove this eventually
-      if (count++ > 50) {
-        throw new Error('Invalid parent/child card link.');
-      }
     }
 
     return last;

@@ -138,12 +138,16 @@ class Grabbed extends Stack {
     card.setParent(target);
 
     if (this.moved) {
-      // Don't add card overlap if dropping on base stack
       let offset = this.offset;
-      // this doesn't work with dropping cards on a foundation
-      // TODO: maybe add a `stackType` prop type?
-      // problem: the first card in the cascade needs a 0px offset -- could handle that edge case here
-      if (['cascade', 'foundation', 'cell'].includes(target.type)) {
+
+      // Don't add card overlap if dropping on a cascade without cards
+      // NOTE: cardCount is 1 instead of 0, due to line 138
+      if (target.type === 'cascade' && target.cardCount === 1) {
+        offset = 0;
+      }
+
+      // don't add card overlap on foundations or cells; only a single card visible at a time
+      if (['foundation', 'cell'].includes(target.stackType)) {
         offset = 0;
       }
 

@@ -12,15 +12,16 @@ class Card {
   // created/assigned in constructor; represents DOM element
   element = null;
 
-  // size/position variables; storing these as we're doing all movement/resizing thru transforms
+  // position variables
   x = 0;
   y = 0;
 
-  width = 75;
-  height = 100;
+  // sizing variables; dynamically set by `onResize`
+  width = null;
+  height = null;
 
-  // when positioning child cards, this is how far they overlap
-  offset = 25;
+  // when positioning child cards, this is how far they overlap; dynamically set by `onResize`
+  offset = null;
 
   // flag whether or not a card is moving around
   animating = false;
@@ -28,6 +29,8 @@ class Card {
   // this value changes depending on where the card is dropped;
   // it affects behavior when card is clicked/dragged
   location = null;
+
+  type = 'card';
 
   constructor(suit, rank) {
     // dynamically create DOM tree representing a card
@@ -74,6 +77,16 @@ class Card {
       yield card;
       card = card.child;
     }
+  }
+
+  get stackType() {
+    let parent = this.parent;
+
+    while (parent.parent) {
+      parent = parent.parent;
+    }
+
+    return parent.type;
   }
 
   get childCount() {
