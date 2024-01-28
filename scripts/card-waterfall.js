@@ -24,11 +24,11 @@ const CardWaterfall = {
   },
 
   get randomVelocity() {
-    const scaledCanvasWidth = parseInt(this.canvas.style.width, 10);
-    const scaledCanvasHeight = parseInt(this.canvas.style.height, 10);
+    const canvasWidth = parseInt(this.canvas.style.width, 10);
+    const canvasHeight = parseInt(this.canvas.style.height, 10);
 
-    let x = scaledCanvasWidth * 0.003;
-    let y = scaledCanvasHeight * 0.005;
+    let x = canvasWidth * 0.003;
+    let y = canvasHeight * 0.005;
 
     let v = {
       x: ((Math.random() * x) + x) * this.randomSign,
@@ -68,13 +68,12 @@ const CardWaterfall = {
   },
 
   update() {
-    const scaledCanvasWidth = parseInt(this.canvas.style.width, 10);
-    const scaledCanvasHeight = parseInt(this.canvas.style.height, 10);
+    const canvasWidth = parseInt(this.canvas.style.width, 10);
+    const canvasHeight = parseInt(this.canvas.style.height, 10);
     const context = this.canvas.getContext('2d');
 
     // pick next card if the existing one goes off screen
-    if (this.fallingCard.x + this.fallingCard.width < 0 ||
-        this.fallingCard.x > scaledCanvasWidth) {
+    if (this.fallingCard.x + this.fallingCard.width < 0 || this.fallingCard.x > canvasWidth) {
       this.fallingCard = this.nextCard();
     }
 
@@ -87,7 +86,11 @@ const CardWaterfall = {
       return;
     }
 
-    context.drawImage(fallingCard.element.children[0], fallingCard.x, fallingCard.y, fallingCard.width, fallingCard.height);
+    const scale = window.devicePixelRatio;
+
+    context.drawImage(fallingCard.element.children[0],
+      fallingCard.x * scale, fallingCard.y * scale,
+      fallingCard.width * scale, fallingCard.height * scale);
 
     const nextPosition = {
       x: fallingCard.x + fallingCard.velocity.x,
@@ -96,8 +99,8 @@ const CardWaterfall = {
 
     // don't let the card go below the bottom edge of the screen
     // TODO: this currently is broken for hidpi screens; canvas is actually 3x
-    if (nextPosition.y + fallingCard.height > scaledCanvasHeight) {
-      nextPosition.y = scaledCanvasHeight - fallingCard.height;
+    if (nextPosition.y + fallingCard.height > canvasHeight) {
+      nextPosition.y = canvasHeight - fallingCard.height;
 
       // "bounce" the card
       fallingCard.velocity.y = -fallingCard.velocity.y * 0.85;
@@ -107,7 +110,7 @@ const CardWaterfall = {
     fallingCard.moveTo(nextPosition.x, nextPosition.y);
 
     // update card velocity w/ "gravity" acceleration
-    fallingCard.velocity.y += scaledCanvasHeight * 0.001; // 0.1%
+    fallingCard.velocity.y += canvasHeight * 0.001; // 0.1%
   },
 
   get hasCards() {
