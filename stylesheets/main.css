@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'generic-mobile-system';
+  src: url('../fonts/generic-mobile-system.woff2') format('woff2');
+}
+
 html,
 body {
   height: 100%;
@@ -9,7 +14,23 @@ body {
 body {
   background: #0a5;
   cursor: grab;
+  font-family: 'generic-mobile-system';
   overflow: hidden;
+}
+
+button {
+  font-family: 'generic-mobile-system';
+  border: 0;
+  background-color: white;
+  height: 100%;
+  padding: 0 1rem;
+  font-size: 1.5rem;
+}
+
+button:hover,
+button:active {
+  color: white;
+  background-color: #010caa;
 }
 
 canvas {
@@ -45,12 +66,29 @@ canvas {
 /* .card .front { transform: rotateY(180deg); }
 .card .back { transform: rotateY(360deg); } */
 
-#status {
+#menu {
+  align-items: center;
+  background-color: white;
+  border-bottom: 1px solid black;
+  box-sizing: border-box;
+  height: 3%;
   position: absolute;
-  bottom: 0;
-  width: 100%; /* TODO: does this need to be dynamically resized? */
+  top: 0;
+  width: 100%;
+}
+
+#status {
+  align-items: center;
   background-color: white;
   border-top: 1px solid black;
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  font-size: 1.5rem;
+  height: 3%;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
 }
 
 @keyframes burst {

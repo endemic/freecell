@@ -9,7 +9,16 @@
 <body>
   <canvas id="canvas"></canvas>
 
-  <section id="status">Holdable Cards: 5 Time Taken: 0</section>
+  <section id="menu">
+    <button id="deal">Deal</button>
+    <button id="undo">Undo</button>
+    <button id="help">Help</button>
+  </section>
+
+  <section id="status">
+    <span id="movable_cards">Movable Cards: 5</span>
+    <span id="time">Time: 0</span>
+  </section>
 
   <script src="scripts/card.js"></script>
   <script src="scripts/stack.js"></script>
@@ -21,26 +30,6 @@
   <script src="scripts/card-waterfall.js"></script>
 
   <!-- https://tobiasahlin.com/blog/how-to-animate-box-shadow/ -->
-  <!--
-    css box-shadow examples:
 
-    box-shadow: rgba(240, 46, 170, 0.4) 0px 5px,
-rgba(240, 46, 170, 0.3) 0px 10px,
-rgba(240, 46, 170, 0.2) 0px 15px,
-rgba(240, 46, 170, 0.1) 0px 20px,
-rgba(240, 46, 170, 0.05) 0px 25px;
-
-
-
-box-shadow: rgb(85, 91, 255) 0px 0px 0px 3px,
-rgb(31, 193, 27) 0px 0px 0px 6px,
-rgb(255, 217, 19) 0px 0px 0px 9px,
-rgb(255, 156, 85) 0px 0px 0px 12px,
-rgb(255, 85, 85) 0px 0px 0px 15px;
-
-
-box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
-
-   -->
 </body>
 </html>

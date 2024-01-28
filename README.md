@@ -4,7 +4,7 @@ After creating `<canvas>`-based versions of Klondike and FreeCell, I decided tha
 player feedback. Double-clicking a card to play on a foundation immediately displayed the card at the target location,
 with no animation indicating the action. Similarly when turning cards from a talon -> waste pile. The lack of animation wasn't quite so bad when dropping cards, since the cards were usually so close to the target location, it was more obvious when they "snapped" into place. However, more animation directing the player's attention is always nice. Since I didn't use a pre-existing game framework for the `<canvas>`-rendering, I would have had to write an animation engine, which I am too lazy to do. I also have a strong case of "NIH" when working on personal projects, so decided to try the challenge of rewriting the card game engine using the DOM, such that I could use 3D transforms and transitions (for "free").
 
-## TODO
+## DONE
 
 - [x] Get card overlap offsets and delayed animation working
 - [x] Animate highlight when card is placed in foundation
@@ -24,23 +24,22 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] change double-click to require clicks to be close to each other -- otherwise you get some weird double-clicks where they are actually farther apart and it seems unintentional
 - [x] Get touch input
 - [x] card waterfall
-
-## IN PROGRESS: getter method for stacks which show where a card should be moved to to be on the end
-
-- [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
-- [ ] Add status bar with timer/allowed cards you can grab
-- [ ] Add menu bar
 - [x] Add undo stack
-  -> need to add animation to undo stack
-- [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
 - [x] Verify "size" objects & collision detection (!!!)
   -> this seems to be causing a bug where double-clicking a card drops it on a foundation, but the card doesn't move
   -> probably should add some tests for this
   -> **breakthru** I think this is actually happening only on first move, before the `grabbed` object updates its position. If a card is clicked but not moved enough, `grabbed` stays at (0, 0), which would naturally overlap the first foundation (if the window is narrow enough). The `grabbed.drop` behavior changes based on whether the `moved` flag is set or not. I think the solution might be to update the `grabbed` object's position?
 - [x] Scrollbars appear on the page; figure out what is causing them
 - [x] Make cards taller, for better play on mobile; also need larger numbers/suits
-  * I think I prefer the "rounded" corners
-- [ ] add `targetPosition` prop or similar on cards/foundations, so we don't need to calculate offset when moving/animating
 - [x] double-clicked cards moving to foundations still go "under" other cards; their z-indices aren't set high enough
 - [x] fix undo to handle reverting multiple cards
 - [x] rework the background graphics for cells/foundations
+
+## IN PROGRESS
+
+- [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
+- [ ] Add status bar with timer/allowed cards you can grab
+- [ ] Add menu bar
+- [ ] add `targetPosition` prop or similar on cards/foundations, so we don't need to calculate offset when moving/animating
+- [ ] fix card waterfall on hidpi screens
+- [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved

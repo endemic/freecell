@@ -45,6 +45,9 @@ const undoStack = [];
 // boolean which can be checked to short-circuit player interaction, etc.
 let gameOver = false;
 
+// current time elapsed in seconds
+let time = 0;
+
 const cascades = [];
 for (let i = 0; i < 8; i += 1) {
   const cascade = new Cascade();
@@ -83,14 +86,13 @@ const cards = [];
 // initialize list of cards
 SUITS.forEach(suit => {
   RANKS.forEach(rank => {
+    // instantiate new card object
     const card = new Card(suit, rank);
+
+    // add the card's HTML to the page
     document.body.append(card.element);
 
-    // move all cards to an arbitrary point in the center
-    // of the tableau, so we can get a "dealing" animation
-    // TODO: determine this point in the `resize` function
-    card.moveTo(500, 500);
-
+    // add the card object to a ref list
     cards.push(card);
   });
 });
@@ -127,7 +129,7 @@ const checkWin = () => {
 // cards as a shortcut for putting them into open cells one at a time
 // You're always allowed to move at least one card, so the "formula"
 // is (open cells + 1)
-const grabbableCards = () => {
+const movableCards = () => {
   return cells.reduce((total, cell) => total + (cell.hasCards ? 0 : 1), 1);
 };
 
@@ -158,8 +160,8 @@ const attemptToPlayOnFoundation = card => {
       if (checkWin()) {
         CardWaterfall.start(() => {
           console.log('TODO: reset game state in this callback');
-          // reset();
-          // deal();
+          reset();
+          deal();
         });
       }
 
@@ -189,10 +191,17 @@ const deal = () => {
 
   // deal cards
   for (let index = 0; index < cards.length; index += 1) {
-    // TODO: ensure all parent/child relationships are reset
     const card = cards[index];
+
+    // move all cards on top of first foundation
+    card.moveTo(foundations[0].x, foundations[0].y);
+
+    // TODO: start all cards off face down, then flip as they move to place
+
     const cascade = cascades[index % cascades.length];
     const lastCard = cascade.lastCard;
+
+    // TODO: ensure all parent/child relationships are reset
 
     card.setParent(lastCard);
 
@@ -237,8 +246,8 @@ cards.forEach(card => {
     }
 
     // only allow a certain number of cards to be picked up
-    if (card.childCount >= grabbableCards()) {
-      console.log(`You can only pick up ${grabbableCards()} cards!`);
+    if (card.childCount >= movableCards()) {
+      console.log(`You can only pick up ${movableCards()} cards!`);
       return;
     }
 
@@ -357,6 +366,9 @@ const onUp = e => {
   console.log('invalid move; dropping card(s) on original position');
 
   grabbed.drop();
+
+  // Update "movable cards" in status bar
+  document.querySelector('#movable_cards').textContent = `Movable Cards: ${movableCards()}`;
 };
 
 const onResize = () => {
@@ -427,8 +439,15 @@ const onResize = () => {
   grabbed.offset = offset;
 
   // Layout code
-  const top = margin;
-  const left = windowMargin + margin;
+  const menu = document.querySelector('#menu');
+  const status = document.querySelector('#status');
+
+  // add internal padding to menu/status bars
+  menu.style.padding = `0 0 0 ${windowMargin}px`;
+  status.style.padding = `0 ${windowMargin}px`;
+
+  const top = margin + menu.offsetHeight;
+  const left = windowMargin + margin / 2;
 
   // foundations on the left
   foundations.forEach((f, i) => {
@@ -442,16 +461,11 @@ const onResize = () => {
 
   cascades.forEach((c, i) => {
       // allows space for cells/foundation
-    c.moveTo(windowMargin + margin + (width + margin) * i, top + height + margin)
+    c.moveTo(windowMargin + margin / 2 + (width + margin) * i, top + height + margin)
   });
 };
 
-const undo = e => {
-  // return unless the keypress is meta/contrl + z (for undo)
-  if (!(e.metaKey || e.ctrlKey) || e.key !== 'z') {
-    return;
-  }
-
+const undo = () => {
   if (undoStack.length < 1) {
     console.log('No previously saved moves on the undo stack.');
     return;
@@ -479,7 +493,49 @@ document.body.addEventListener('mouseup', onUp);
 document.body.addEventListener('touchend', onUp);
 
 window.addEventListener('resize', onResize);
-window.addEventListener('keydown', undo);
+window.addEventListener('keydown', e => {
+  // return unless the keypress is meta/contrl + z (for undo)
+  if (!(e.metaKey || e.ctrlKey) || e.key !== 'z') {
+    return;
+  }
+
+  undo();
+});
+
+document.querySelector('#deal').addEventListener('click', e => {
+  e.preventDefault();
+
+  if (!confirm('New game?')) {
+    return;
+  }
+
+  reset();
+  deal();
+});
+
+document.querySelector('#undo').addEventListener('click', e => {
+  e.preventDefault();
+
+  if (gameOver) {
+    return;
+  }
+
+  undo();
+});
+
+document.querySelector('#help').addEventListener('click', e => {
+  e.preventDefault();
+
+  window.open('https://en.wikipedia.org/wiki/FreeCell', '_blank');
+});
+
+window.setInterval(() => {
+  if (gameOver) {
+    return;
+  }
+  time += 1;
+  document.querySelector('#time').textContent = `Time: ${time}`;
+}, 1000);
 
 // initial resize
 onResize();
