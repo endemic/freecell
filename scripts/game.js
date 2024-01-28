@@ -104,6 +104,7 @@ if (DEBUG) {
     // move all cards to winning positions
     for (let j = 0; j < 13; j += 1) {
       let card = cards[(13 * i) + j];
+      card.flip();
       let parent = foundation.lastCard;
       card.setParent(parent);
       card.moveTo(parent.x, parent.y);
@@ -195,8 +196,7 @@ const deal = () => {
 
     // move all cards on top of first foundation
     card.moveTo(foundations[0].x, foundations[0].y);
-
-    // TODO: start all cards off face down, then flip as they move to place
+    card.zIndex = 51 - index;
 
     const cascade = cascades[index % cascades.length];
     const lastCard = cascade.lastCard;
@@ -208,11 +208,12 @@ const deal = () => {
     ((card, lastCard, offset, delay) => {
       wait(delay).then(() => {
         card.animateTo(lastCard.x, lastCard.y + offset);
+        card.flip();
         card.resetZIndex();
       });
     })(card, lastCard, offset, delay);
 
-    delay += 10; // 50ms looks nice
+    delay += 100; // 50ms looks nice
     offset = index < 7 ? 0 : card.offset;
   };
 };
@@ -368,6 +369,7 @@ const onUp = e => {
   grabbed.drop();
 
   // Update "movable cards" in status bar
+  // TODO: this doesn't work in most cases because successful card drops return from this function
   document.querySelector('#movable_cards').textContent = `Movable Cards: ${movableCards()}`;
 };
 

@@ -49,7 +49,7 @@ canvas {
   position: absolute;
   top: 0;
   /* the box shadow looks weird with the flip transition; would need to turn shadow off */
-  box-shadow: 0 0.2rem 0.2rem rgba(0, 0 , 0, 0.1);
+  /* box-shadow: 0 0.2rem 0.2rem rgba(0, 0 , 0, 0.1); */
 }
 
 .card > img {
@@ -61,10 +61,9 @@ canvas {
   transition: transform 0.5s;
   width: 100%;
 }
-.card .front { transform: rotateY(0); }
-.card .back { transform: rotateY(180deg); }
-/* .card .front { transform: rotateY(180deg); }
-.card .back { transform: rotateY(360deg); } */
+
+.card .front { transform: rotateY(-180deg); }
+.card .back { transform: rotateY(0); }
 
 #menu {
   align-items: center;
