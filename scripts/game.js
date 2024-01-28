@@ -172,6 +172,17 @@ const attemptToPlayOnFoundation = card => {
   }
 };
 
+const reset = () => {
+  cards.forEach(c => {
+    c.parent = null;
+    c.child = null;
+  });
+
+  cascades.forEach(c => c.child = null);
+  cells.forEach(c => c.child = null);
+  foundations.forEach(f => f.child = null);
+};
+
 const deal = () => {
   // shuffle deck
   let currentIndex = cards.length;
