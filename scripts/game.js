@@ -245,7 +245,7 @@ cards.forEach(card => {
 
     const point = getPoint(e);
     const delta = Date.now() - lastOnDownTimestamp;
-    const doubleClick = delta < 500 && dist(point, previousPoint) < 10;
+    const doubleClick = delta < 500 && dist(point, previousPoint) < 15;
 
     // reset the timestamp that stores the last time the player clicked
     // if the current click counts as "double", then set the timestamp way in the past
