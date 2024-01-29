@@ -125,17 +125,24 @@ class Card {
     this.element.style.translate = `${this.x}px ${this.y}px 0px`;
   }
 
-  animateTo(x, y) {
+  animateTo(x, y, callback) {
     this.x = x;
     this.y = y;
 
     this.animating = true;
+    const duration = 300;
 
     // https://www.cssportal.com/css-cubic-bezier-generator/
-    this.element.style.transition = 'translate 250ms cubic-bezier( 0.175, 0.885, 0.32, 1.275 )';
+    this.element.style.transition = `translate ${duration}ms cubic-bezier( 0.175, 0.885, 0.32, 1.275 )`;
     this.element.style.translate = `${this.x}px ${this.y}px 0px`;
 
-    wait(250).then(() => this.animating = false);
+    wait(duration).then(() => {
+      this.animating = false;
+
+      if (callback) {
+        callback();
+      }
+    });
   }
 
   flip() {

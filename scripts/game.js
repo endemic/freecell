@@ -4,6 +4,12 @@ const wait = ms => {
   });
 };
 
+const waitAsync = async ms => {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+};
+
 const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 
 const getPoint = event => {
@@ -181,9 +187,12 @@ const reset = () => {
   cascades.forEach(c => c.child = null);
   cells.forEach(c => c.child = null);
   foundations.forEach(f => f.child = null);
+
+  time = 0;
+  gameOver = false;
 };
 
-const deal = () => {
+const deal = async () => {
   // shuffle deck
   let currentIndex = cards.length;
   let randomIndex;
@@ -198,33 +207,34 @@ const deal = () => {
     [cards[currentIndex], cards[randomIndex]] = [cards[randomIndex], cards[currentIndex]];
   }
 
-  let delay = 0;
   let offset = 0;
 
-  // deal cards
+  // move cards back to initial position
   for (let index = 0; index < cards.length; index += 1) {
     const card = cards[index];
 
     // move all cards on top of first foundation
     card.moveTo(foundations[0].x, foundations[0].y);
     card.zIndex = 51 - index;
+  }
+
+  // deal cards
+  for (let index = 0; index < cards.length; index += 1) {
+    const card = cards[index];
 
     const cascade = cascades[index % cascades.length];
     const lastCard = cascade.lastCard;
 
-    // TODO: ensure all parent/child relationships are reset
-
     card.setParent(lastCard);
+    card.animateTo(lastCard.x, lastCard.y + offset);
+    card.flip();
 
-    ((card, lastCard, offset, delay) => {
-      wait(delay).then(() => {
-        card.animateTo(lastCard.x, lastCard.y + offset);
-        card.flip();
-        card.resetZIndex();
-      });
-    })(card, lastCard, offset, delay);
+    await waitAsync(50);
 
-    delay += 100; // 50ms looks nice
+    // update z-index of the card _after_ the synchronous delay;
+    // this gives the animation time to move the card away from the deck
+    card.resetZIndex()
+
     offset = index < 7 ? 0 : card.offset;
   };
 };
@@ -317,8 +327,8 @@ const onUp = e => {
       if (checkWin()) {
         CardWaterfall.start(() => {
           console.log('TODO: reset game state in this callback');
-          // reset();
-          // deal();
+          reset();
+          deal();
         });
       }
 
