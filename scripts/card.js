@@ -145,7 +145,22 @@ class Card {
     });
   }
 
-  flip() {
+  flip(direction) {
+    let duration = 500;
+
+    // if `direction` is not set, then the effect is toggled
+    if (direction === 'up') {
+      this.faceUp = false;
+      duration = 0;
+    } else if (direction === 'down') {
+      this.faceUp = true;
+      duration = 0;
+    }
+
+    // set animation duration
+    this.element.children[0].style.transition = `transform ${duration}ms`; // front
+    this.element.children[1].style.transition = `transform ${duration}ms`; // front
+
     // timing for this flip transition is defined in CSS
     if (this.faceUp) {
       this.element.children[0].style.transform = 'rotateY(-180deg)'; // front
