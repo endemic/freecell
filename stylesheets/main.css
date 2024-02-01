@@ -12,28 +12,14 @@ body {
 }
 
 body {
-  background: #0a5;
+  background: white;
   cursor: grab;
   font-family: 'generic-mobile-system';
   overflow: hidden;
 }
 
-button {
-  font-family: 'generic-mobile-system';
-  border: 0;
-  background-color: white;
-  height: 100%;
-  padding: 0 1rem;
-  font-size: 1.5rem;
-}
-
-button:hover,
-button:active {
-  color: white;
-  background-color: #010caa;
-}
-
 canvas {
+  background: #0a5;
   display: block;
   height: 100%;
   position: relative;
@@ -58,7 +44,6 @@ canvas {
   image-rendering: pixelated;
   position: absolute;
   transform-style: preserve-3d;
-  transition: transform 0.5s;
   width: 100%;
 }
 
@@ -70,10 +55,29 @@ canvas {
   background-color: white;
   border-bottom: 1px solid black;
   box-sizing: border-box;
-  height: 3%;
+  cursor: default;
+  display: flex;
+  height: 4%;
   position: absolute;
   top: 0;
   width: 100%;
+}
+
+button {
+  background-color: white;
+  border: 0;
+  color: black;
+  display: block;
+  font-family: 'generic-mobile-system';
+  font-size: 1.5rem;
+  height: 100%;
+  padding: 0 1rem;
+}
+
+button:hover,
+button:active {
+  background-color: #010caa;
+  color: white;
 }
 
 #status {
@@ -84,10 +88,15 @@ canvas {
   box-sizing: border-box;
   display: flex;
   font-size: 1.5rem;
-  height: 3%;
+  height: 4%;
   justify-content: space-between;
   position: absolute;
   width: 100%;
+}
+
+#status span {
+  display: block;
+  margin: 0 0.1rem;
 }
 
 @keyframes burst {

@@ -182,6 +182,7 @@ const reset = () => {
   cards.forEach(c => {
     c.parent = null;
     c.child = null;
+    c.flip('down');
   });
 
   cascades.forEach(c => c.child = null);
@@ -510,22 +511,16 @@ const undo = () => {
   grabbed.drop(oldParent);
 };
 
-document.body.addEventListener('mousemove', onMove);
-document.body.addEventListener('touchmove', onMove);
-document.body.addEventListener('mouseup', onUp);
-document.body.addEventListener('touchend', onUp);
-
-window.addEventListener('resize', onResize);
-window.addEventListener('keydown', e => {
+const onKeyDown = e => {
   // return unless the keypress is meta/contrl + z (for undo)
   if (!(e.metaKey || e.ctrlKey) || e.key !== 'z') {
     return;
   }
 
   undo();
-});
+};
 
-document.querySelector('#deal').addEventListener('click', e => {
+const onDeal = e => {
   e.preventDefault();
 
   if (!confirm('New game?')) {
@@ -534,9 +529,9 @@ document.querySelector('#deal').addEventListener('click', e => {
 
   reset();
   deal();
-});
+};
 
-document.querySelector('#undo').addEventListener('click', e => {
+const onUndo = e => {
   e.preventDefault();
 
   if (gameOver) {
@@ -544,18 +539,39 @@ document.querySelector('#undo').addEventListener('click', e => {
   }
 
   undo();
-});
+};
 
-document.querySelector('#help').addEventListener('click', e => {
+const onHelp = e => {
   e.preventDefault();
 
   window.open('https://en.wikipedia.org/wiki/FreeCell', '_blank');
-});
+};
 
+document.body.addEventListener('mousemove', onMove);
+document.body.addEventListener('touchmove', onMove);
+document.body.addEventListener('mouseup', onUp);
+document.body.addEventListener('touchend', onUp);
+
+window.addEventListener('resize', onResize);
+window.addEventListener('keydown', onKeyDown);
+
+const dealButton = document.querySelector('#deal');
+const undoButton = document.querySelector('#undo');
+const helpButton = document.querySelector('#help');
+
+dealButton.addEventListener('mouseup', onDeal);
+undoButton.addEventListener('mouseup', onUndo);
+helpButton.addEventListener('mouseup', onHelp);
+dealButton.addEventListener('touchend', onDeal);
+undoButton.addEventListener('touchend', onUndo);
+helpButton.addEventListener('touchend', onHelp);
+
+// start timer
 window.setInterval(() => {
   if (gameOver) {
     return;
   }
+
   time += 1;
   document.querySelector('#time').textContent = `Time: ${time}`;
 }, 1000);

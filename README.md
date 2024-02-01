@@ -37,11 +37,15 @@ with no animation indicating the action. Similarly when turning cards from a tal
 
 ## IN PROGRESS
 
-- [ ] Use `filter: invert(1);` on grabbed cards? Not sure this is a necessary affordance, as the original Windows version used this to show which cards you had selected; in this version, you move them with click/tap
 - [x] Add status bar with timer/allowed cards you can grab
 - [x] Add menu bar
 - [ ] add `targetPosition` prop or similar on cards/foundations, so we don't need to calculate offset when moving/animating
 - [x] fix card waterfall on hidpi screens
+- [x] make double-click "distance" more generous
+- [x] add method to card to manually set to face up or face down
+  * "reset" method should make everything face down
+- [x] fix menu bar on mobile -- for some reason the event handlers don't work
 - [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
 - [ ] Cards are still animating _under_ when double-click
-- [ ] make double-click "distance" more generous
+- [ ] Ensure that "movable cards" counter updates properly
+- [ ] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted?
