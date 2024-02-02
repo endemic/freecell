@@ -12,14 +12,13 @@ body {
 }
 
 body {
-  background: white;
+  background: #0a5;
   cursor: grab;
   font-family: 'generic-mobile-system';
   overflow: hidden;
 }
 
 canvas {
-  background: #0a5;
   display: block;
   height: 100%;
   position: relative;
