@@ -192,7 +192,7 @@ const reset = () => {
 
   time = 0;
   gameOver = false;
-  undoStack = [];
+  undoStack.length = 0; // trick to empty an array
 };
 
 const deal = async () => {
@@ -329,7 +329,6 @@ const onUp = e => {
 
       if (checkWin()) {
         CardWaterfall.start(() => {
-          console.log('TODO: reset game state in this callback');
           reset();
           deal();
         });
