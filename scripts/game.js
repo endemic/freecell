@@ -191,6 +191,7 @@ const reset = () => {
 
   time = 0;
   gameOver = false;
+  undoStack = [];
 };
 
 const deal = async () => {

@@ -103,7 +103,6 @@ const CardWaterfall = {
     };
 
     // don't let the card go below the bottom edge of the screen
-    // TODO: this currently is broken for hidpi screens; canvas is actually 3x
     if (nextPosition.y + fallingCard.height > canvasHeight) {
       nextPosition.y = canvasHeight - fallingCard.height;
 
