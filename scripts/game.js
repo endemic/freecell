@@ -154,6 +154,7 @@ const attemptToPlayOnFoundation = card => {
       });
 
       card.setParent(parent);
+      card.zIndex = 52; // ensure card doesn't animate _under_ others
       card.animateTo(parent.x, parent.y);
 
       // show a brief "flash" when the card is close to the foundation

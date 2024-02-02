@@ -39,13 +39,13 @@ with no animation indicating the action. Similarly when turning cards from a tal
 
 - [x] Add status bar with timer/allowed cards you can grab
 - [x] Add menu bar
-- [ ] add `targetPosition` prop or similar on cards/foundations, so we don't need to calculate offset when moving/animating
 - [x] fix card waterfall on hidpi screens
 - [x] make double-click "distance" more generous
 - [x] add method to card to manually set to face up or face down
   * "reset" method should make everything face down
 - [x] fix menu bar on mobile -- for some reason the event handlers don't work
 - [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
-- [ ] Cards are still animating _under_ when double-click
+- [x] Cards are still animating _under_ when double-click
 - [ ] Ensure that "movable cards" counter updates properly
 - [ ] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted?
+- [ ] BUG: if clicking the canvas immediately after waterfall is fired and before a double-clicked card is animated, a TypeError gets generated because `resetZIndex` is called on the card after a 250ms delay, but `reset()` has already been called by the game, which removes all parent references. Solution: delay game win check by 250ms
