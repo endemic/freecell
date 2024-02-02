@@ -12,8 +12,13 @@ const CardWaterfall = {
     // put canvas in front of DOM elements
     this.canvas.style.zIndex = 52;
 
+    // need to permanently bind `this` in order to remove event listeners;
+    // have to pass the exact same function reference to `removeEventListener`
+    this.stop = this.stop.bind(this);
+
     // cancel animation on user interaction
-    this.canvas.addEventListener('click', this.stop.bind(this));
+    this.canvas.addEventListener('mouseup', this.stop);
+    this.canvas.addEventListener('touchend', this.stop);
 
     // kick off animation loop
     this.interval = window.setInterval(() => this.update(), 16);
@@ -119,7 +124,8 @@ const CardWaterfall = {
 
   stop() {
     // stop listening for interaction
-    this.canvas.removeEventListener('click', this.stop.bind(this));
+    this.canvas.removeEventListener('mouseup', this.stop);
+    this.canvas.removeEventListener('touchend', this.stop);
 
     // stop animation loop
     window.clearInterval(this.interval);
