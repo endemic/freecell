@@ -137,8 +137,11 @@ const checkWin = () => {
 // You're always allowed to move at least one card, so the "formula"
 // is (open cells + 1)
 const movableCards = () => {
+  // TODO: max = Math.pow(2, emptyCascades) * (emptyCells + 1)
   return cells.reduce((total, cell) => total + (cell.hasCards ? 0 : 1), 1);
 };
+
+const updateMovableCardsLabel = () => document.querySelector('#movable_cards').textContent = `Movable Cards: ${movableCards()}`;
 
 const attemptToPlayOnFoundation = card => {
   for (let i = 0; i < foundations.length; i += 1) {
@@ -167,11 +170,12 @@ const attemptToPlayOnFoundation = card => {
 
       if (checkWin()) {
         CardWaterfall.start(() => {
-          console.log('TODO: reset game state in this callback');
           reset();
           deal();
         });
       }
+
+      updateMovableCardsLabel();
 
       // if we have a valid play, return from this function;
       return;
@@ -334,6 +338,8 @@ const onUp = e => {
         });
       }
 
+      updateMovableCardsLabel();
+
       // valid play, so break out of the loop checking other foundations
       return;
     }
@@ -358,6 +364,8 @@ const onUp = e => {
 
       console.log(`dropping ${card} on cell #${i}`);
 
+      updateMovableCardsLabel();
+
       // valid play, so return out of the loop checking other cells
       return;
     }
@@ -380,6 +388,8 @@ const onUp = e => {
 
       console.log(`dropping ${card} on cascade #${i}`);
 
+      updateMovableCardsLabel();
+
       // valid play, so return out of the loop checking other cells
       return;
     }
@@ -390,10 +400,6 @@ const onUp = e => {
   console.log('invalid move; dropping card(s) on original position');
 
   grabbed.drop();
-
-  // Update "movable cards" in status bar
-  // TODO: this doesn't work in most cases because successful card drops return from this function
-  document.querySelector('#movable_cards').textContent = `Movable Cards: ${movableCards()}`;
 };
 
 const onResize = () => {
@@ -510,6 +516,8 @@ const undo = () => {
   grabbed.moved = true;
 
   grabbed.drop(oldParent);
+
+  updateMovableCardsLabel();
 };
 
 const onKeyDown = e => {
