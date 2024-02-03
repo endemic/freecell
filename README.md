@@ -2,7 +2,7 @@
 
 After creating `<canvas>`-based versions of Klondike and FreeCell, I decided that they didn't provide enough
 player feedback. Double-clicking a card to play on a foundation immediately displayed the card at the target location,
-with no animation indicating the action. Similarly when turning cards from a talon -> waste pile. The lack of animation wasn't quite so bad when dropping cards, since the cards were usually so close to the target location, it was more obvious when they "snapped" into place. However, more animation directing the player's attention is always nice. Since I didn't use a pre-existing game framework for the `<canvas>`-rendering, I would have had to write an animation engine, which I am too lazy to do. I also have a strong case of "NIH" when working on personal projects, so decided to try the challenge of rewriting the card game engine using the DOM, such that I could use 3D transforms and transitions (for "free").
+with no animation indicating the action. Similarly when turning cards from a talon -> waste pile. The lack of animation wasn't quite so bad when dropping cards, since the cards were usually so close to the target location, it was more obvious when they "snapped" into place. However, more animation directing the player's attention is always nice. Since I didn't use a pre-existing game framework for the `<canvas>`-rendering, I would have had to write an animation engine, which I am too lazy to do. I also have a strong case of [NIH](https://en.wikipedia.org/wiki/Not_invented_here) when working on personal projects, so decided to try the challenge of rewriting the card game engine using the DOM, such that I could use 3D transforms and transitions (for "free"). The final confirmation that I would go ahead with this rewrite was when I discovered I could still create the "card waterfall" effect: by having a `<canvas>` background, animating a single card element (with an `<img>` to represent the card face) and drawing the trail by using the `<img>` as a data source for `context.drawImage`.
 
 ## DONE
 
@@ -34,9 +34,6 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] double-clicked cards moving to foundations still go "under" other cards; their z-indices aren't set high enough
 - [x] fix undo to handle reverting multiple cards
 - [x] rework the background graphics for cells/foundations
-
-## IN PROGRESS
-
 - [x] Add status bar with timer/allowed cards you can grab
 - [x] Add menu bar
 - [x] fix card waterfall on hidpi screens
@@ -44,8 +41,16 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] add method to card to manually set to face up or face down
   * "reset" method should make everything face down
 - [x] fix menu bar on mobile -- for some reason the event handlers don't work
-- [ ] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
 - [x] Cards are still animating _under_ when double-click
-- [ ] Ensure that "movable cards" counter updates properly
+- [x] Ensure that "movable cards" counter updates properly
+
+## IN PROGRESS
+
+- [x] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
+  * this is problematic using delays, because each time the player moves the cursor, the delay is reset -- therefore the child cards don't actually move until the cursor _stops_
 - [ ] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted?
 - [ ] BUG: if clicking the canvas immediately after waterfall is fired and before a double-clicked card is animated, a TypeError gets generated because `resetZIndex` is called on the card after a 250ms delay, but `reset()` has already been called by the game, which removes all parent references. Solution: delay game win check by 250ms
+- [ ] Ensure status/menu bars look good on portrait/landscape desktop/mobile
+  * can use orientation media queries for different height values
+- [ ] Add metadata/icon
+- [ ] service worker for offline access

@@ -50,22 +50,20 @@ class Grabbed extends Stack {
     }
   }
 
-  animateTo(point) {
+  async animateTo(point) {
     if (!this.child) {
       return;
     }
 
     // animate child cards
     let offset = 0;
-    let delay = 0;
 
     for (let card of this.children()) {
-      ((card, point, offset, delay) => {
-        wait(delay).then(() => card.animateTo(point.x, point.y + offset));
-      })(card, point, offset, delay);
+      card.animateTo(point.x, point.y + offset);
+
+      await waitAsync(50);
 
       offset += this.offset;
-      delay += 50;
     }
   }
 
@@ -158,6 +156,7 @@ class Grabbed extends Stack {
 
       // the `wait` allows for the cards to finish animating so they don't
       // ease underneath neighboring cards
+      // TODO: theoretically this needs to wait an additional 50ms for each card in the stack
       wait(250).then(() => card.resetZIndex());
     } else {
       // if card hasn't moved at all, we can just reset the z-index

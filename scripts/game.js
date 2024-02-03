@@ -415,6 +415,10 @@ const onResize = () => {
   canvas.style.height = `${windowHeight}px`;
 
   // account for high DPI screens
+  // TODO: resizing the canvas while the card waterfall is running will erase all
+  // previously drawn content. It's possible to persist it by copying to an unattached
+  // canvas node, resizing, then drawing the copy back to the main canvas
+  // https://stackoverflow.com/a/10658422
   canvas.width = Math.floor(windowWidth * scale);
   canvas.height = Math.floor(windowHeight * scale);
 
