@@ -132,6 +132,9 @@ const checkWin = () => {
   });
 };
 
+// If this function evaluates truthy, all stacks on the tableau are organized such that the game is basically won
+const enableAutoWin = () => cascades.every(c => !c.hasCards || c.child.childrenInSequence);
+
 // Electronic versions of the game allow you to pick up multiple
 // cards as a shortcut for putting them into open cells one at a time
 // You're always allowed to move at least one card, so the "formula"
@@ -143,7 +146,7 @@ const movableCards = () => {
 
 const updateMovableCardsLabel = () => document.querySelector('#movable_cards').textContent = `Movable Cards: ${movableCards()}`;
 
-const attemptToPlayOnFoundation = card => {
+const attemptToPlayOnFoundation = async card => {
   for (let i = 0; i < foundations.length; i += 1) {
     const foundation = foundations[i];
 
@@ -169,6 +172,9 @@ const attemptToPlayOnFoundation = card => {
       console.log(`playing ${card} on foundation #${i}`);
 
       if (checkWin()) {
+        // wait for animation to finish
+        await waitAsync(250);
+
         CardWaterfall.start(() => {
           reset();
           deal();
@@ -195,8 +201,12 @@ const reset = () => {
   foundations.forEach(f => f.child = null);
 
   time = 0;
+  document.querySelector('#time').textContent = `Time: ${time}`;
+
   gameOver = false;
   undoStack.length = 0; // trick to empty an array
+
+  updateMovableCardsLabel();
 };
 
 const deal = async () => {
@@ -302,7 +312,7 @@ const onMove = e => {
   grabbed.moveTo(point);
 };
 
-const onUp = e => {
+const onUp = async e => {
   e.preventDefault();
 
   if (!grabbed.hasCards) {
@@ -332,6 +342,9 @@ const onUp = e => {
       console.log(`dropping ${card} on foundation #${i}`);
 
       if (checkWin()) {
+        // wait for animation to finish
+        await waitAsync(250);
+
         CardWaterfall.start(() => {
           reset();
           deal();
