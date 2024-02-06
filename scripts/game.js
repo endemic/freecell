@@ -492,7 +492,7 @@ const onResize = () => {
 
   // add internal padding to menu/status bars
   menu.style.padding = `0 0 0 ${windowMargin}px`;
-  status.style.padding = `0 ${windowMargin}px`;
+  status.style.padding = `0 ${windowMargin + margin}px`;
 
   const top = margin + menu.offsetHeight;
   const left = windowMargin + margin / 2;

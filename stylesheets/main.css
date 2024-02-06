@@ -68,7 +68,7 @@ button {
   color: black;
   display: block;
   font-family: 'generic-mobile-system';
-  font-size: 1.5rem;
+  font-size: 3vh;
   height: 100%;
   padding: 0 1rem;
 }
@@ -86,7 +86,7 @@ button:active {
   bottom: 0;
   box-sizing: border-box;
   display: flex;
-  font-size: 1.5rem;
+  font-size: 3vh;
   height: 4%;
   justify-content: space-between;
   position: absolute;
@@ -96,6 +96,21 @@ button:active {
 #status span {
   display: block;
   margin: 0 0.1rem;
+}
+
+@media (orientation: portrait) {
+  #menu {
+    height: 5%;
+  }
+
+  #menu button {
+    font-size: 4vh;
+  }
+
+  #status {
+    height: 5%;
+    font-size: 4vh;
+  }
 }
 
 @keyframes burst {
