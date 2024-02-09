@@ -424,20 +424,6 @@ const onResize = () => {
   const windowHeight = window.innerHeight;
 
   const aspectRatio = 4 / 3;
-  const scale = window.devicePixelRatio;
-  const canvas = document.querySelector('#canvas');
-
-  // canvas is as large as the window;
-  canvas.style.width = `${windowWidth}px`;
-  canvas.style.height = `${windowHeight}px`;
-
-  // account for high DPI screens
-  // TODO: resizing the canvas while the card waterfall is running will erase all
-  // previously drawn content. It's possible to persist it by copying to an unattached
-  // canvas node, resizing, then drawing the copy back to the main canvas
-  // https://stackoverflow.com/a/10658422
-  canvas.width = Math.floor(windowWidth * scale);
-  canvas.height = Math.floor(windowHeight * scale);
 
   // playable area, where cards will be drawn
   let tableauWidth;
@@ -512,9 +498,12 @@ const onResize = () => {
   });
 
   cascades.forEach((c, i) => {
-      // allows space for cells/foundation
+    // allows space for cells/foundation
     c.moveTo(windowMargin + margin / 2 + (width + margin) * i, top + height + margin)
   });
+
+  // Handle resizing <canvas> for card waterfall
+  CardWaterfall.onResize(windowWidth, windowHeight);
 };
 
 const undo = () => {
