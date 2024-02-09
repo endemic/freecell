@@ -172,6 +172,8 @@ const attemptToPlayOnFoundation = async card => {
       console.log(`playing ${card} on foundation #${i}`);
 
       if (checkWin()) {
+        gameOver = true;
+
         // wait for animation to finish
         await waitAsync(250);
 
@@ -342,6 +344,8 @@ const onUp = async e => {
       console.log(`dropping ${card} on foundation #${i}`);
 
       if (checkWin()) {
+        gameOver = true;
+
         // wait for animation to finish
         await waitAsync(250);
 
