@@ -245,7 +245,7 @@ const deal = async () => {
     const lastCard = cascade.lastCard;
 
     card.setParent(lastCard);
-    card.animateTo(lastCard.x, lastCard.y + offset);
+    card.animateTo(lastCard.x, lastCard.y + offset, 750);
     card.flip();
 
     await waitAsync(50);
