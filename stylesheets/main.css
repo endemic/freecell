@@ -29,6 +29,7 @@ canvas {
 .cell,
 .foundation {
   /* width and height for these elements is set dynamically */
+  image-rendering: pixelated;
   left: 0;
   perspective: 500px;
   position: absolute;
