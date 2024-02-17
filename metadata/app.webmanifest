@@ -14,7 +14,7 @@
       }
   ],
   "start_url": "/freecell/play/",
-  "theme_color": "#dddddd",
-  "background_color": "#dddddd",
+  "theme_color": "#00aa55",
+  "background_color": "#00aa55",
   "display": "standalone"
 }
