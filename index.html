@@ -46,8 +46,11 @@
   <script src="scripts/foundation.js"></script>
   <script src="scripts/card-waterfall.js"></script>
   <script src="scripts/game.js"></script>
+  <script src="scripts/ios-pwa-splash.js"></script>
 
   <script>
+    iosPWASplash('metadata/images/splash.png', 'black');
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('scripts/service-worker.js')
