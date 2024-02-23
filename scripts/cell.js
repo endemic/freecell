@@ -6,7 +6,7 @@ class Cell extends Stack {
 
     this.element = document.createElement('img');
     this.element.classList.add('cell');
-    this.element.src = 'images/backs/cell.png';
+    this.element.src = 'images/other/cell.png';
   }
 
   get size() {

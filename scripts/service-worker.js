@@ -3,6 +3,11 @@ self.addEventListener('install', e => {
       caches.open('freecell').then(cache => cache.addAll([
           '../stylesheets/main.css',
           '../index.html',
+          '../about.html',
+
+          '../images/other/cell.png',
+          '../images/other/foundation.png',
+          '../images/other/card-back.png',
 
           '../images/clubs/ace.png',
           '../images/clubs/two.png',
@@ -67,8 +72,9 @@ self.addEventListener('install', e => {
           '../scripts/foundation.js',
           '../scripts/game.js',
           '../scripts/grabbed.js',
-          '../scripts/stack.js',
-
+          '../scripts/ios-pwa-splash.js',
+          // not necessary to cache the service worker script itself
+          '../scripts/stack.js'
       ])),
   );
 });

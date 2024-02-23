@@ -52,7 +52,7 @@ class Card {
    front.src = `images/${this.suit}/${this.rank}.png`;
    front.classList.add('front');
    const back = document.createElement('img');
-   back.src = `images/backs/one.png`;
+   back.src = `images/other/card-back.png`;
    back.classList.add('back');
 
    this.element.append(front, back);
