@@ -44,6 +44,7 @@
     <span id="time">Time: 0</span>
   </section>
 
+  <script src="scripts/utils.js"></script>
   <script src="scripts/card.js"></script>
   <script src="scripts/stack.js"></script>
   <script src="scripts/grabbed.js"></script>
@@ -58,7 +59,7 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('scripts/service-worker.js')
-        .then(() => { console.log('Service Worker Registered'); });
+        .then(() => { log('Service Worker Registered'); });
     }
   </script>
 

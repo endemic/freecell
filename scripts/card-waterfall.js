@@ -65,7 +65,7 @@ const CardWaterfall = {
       y: ((Math.random() * y) + y) * -1
     };
 
-    console.log(v);
+    log(v);
 
     return v;
   },
@@ -161,7 +161,7 @@ const CardWaterfall = {
     const context = this.canvas.getContext('2d');
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    console.log('running waterfall callback');
+    log('running waterfall callback');
     this.callback();
   }
 };

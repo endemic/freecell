@@ -1,37 +1,3 @@
-const wait = ms => {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-};
-
-const waitAsync = async ms => {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-};
-
-const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
-
-const getPoint = event => {
-  if (event.changedTouches && event.changedTouches.length > 0) {
-    return {
-      x: event.changedTouches[0].clientX,
-      y: event.changedTouches[0].clientY
-    };
-  }
-
-  return {
-    x: event.x,
-    y: event.y
-  };
-}
-
-const log = () => {
-  if (DEBUG) {
-    console.log(arguments);
-  }
-};
-
 const SUITS = ['hearts', 'spades', 'diamonds', 'clubs'];
 const RANKS = ['ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king'];
 const DEBUG = false;
@@ -169,7 +135,7 @@ const attemptToPlayOnFoundation = async card => {
       // Ensure card z-index is correct _after_ it animates
       wait(250).then(() => card.resetZIndex());
 
-      console.log(`playing ${card} on foundation #${i}`);
+      log(`playing ${card} on foundation #${i}`);
 
       if (checkWin()) {
         gameOver = true;
@@ -275,27 +241,27 @@ cards.forEach(card => {
     // can only double-click to play on a foundation
     // if card is last in a cascade/cell
     if (doubleClick && !card.hasCards && !card.animating) {
-      console.log(`double click! attempt to play ${card} on foundations`);
+      log(`double click! attempt to play ${card} on foundations`);
       attemptToPlayOnFoundation(card);
       return;
     }
 
     // only allow alternating sequences of cards to be picked up
     if (!card.childrenInSequence) {
-      console.log(`can't pick up ${card}, not a sequence!`);
+      log(`can't pick up ${card}, not a sequence!`);
       return;
     }
 
     // only allow a certain number of cards to be picked up
     if (card.childCount >= movableCards()) {
-      console.log(`You can only pick up ${movableCards()} cards!`);
+      log(`You can only pick up ${movableCards()} cards!`);
       return;
     }
 
     grabbed.grab(card);
     grabbed.setOffset(point);
 
-    console.log(`onDown on ${card}, offset: ${point.x}, ${point.y}`);
+    log(`onDown on ${card}, offset: ${point.x}, ${point.y}`);
   };
 
   card.element.addEventListener('mousedown', onDown);
@@ -341,7 +307,7 @@ const onUp = async e => {
       grabbed.drop(parent); // either a card or the foundation itself
       wait(150).then(() => card.flash());
 
-      console.log(`dropping ${card} on foundation #${i}`);
+      log(`dropping ${card} on foundation #${i}`);
 
       if (checkWin()) {
         gameOver = true;
@@ -379,7 +345,7 @@ const onUp = async e => {
 
       grabbed.drop(cell);
 
-      console.log(`dropping ${card} on cell #${i}`);
+      log(`dropping ${card} on cell #${i}`);
 
       updateMovableCardsLabel();
 
@@ -403,7 +369,7 @@ const onUp = async e => {
 
       grabbed.drop(parent);
 
-      console.log(`dropping ${card} on cascade #${i}`);
+      log(`dropping ${card} on cascade #${i}`);
 
       updateMovableCardsLabel();
 
@@ -414,7 +380,7 @@ const onUp = async e => {
 
   // if we got this far, that means no valid move was made,
   // so the card(s) can go back to their original position
-  console.log('invalid move; dropping card(s) on original position');
+  log('invalid move; dropping card(s) on original position');
 
   grabbed.drop();
 };
@@ -508,7 +474,7 @@ const onResize = () => {
 
 const undo = () => {
   if (undoStack.length < 1) {
-    console.log('No previously saved moves on the undo stack.');
+    log('No previously saved moves on the undo stack.');
     return;
   }
 

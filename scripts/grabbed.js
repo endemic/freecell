@@ -28,7 +28,7 @@ class Grabbed extends Stack {
     // to allow for easier double-click to play
     let d = dist(point, this.origin);
     if (d < 5) {
-      console.log(`didn't move enough: ${d}`);
+      log(`didn't move enough: ${d}`);
       return;
     }
 
@@ -78,7 +78,7 @@ class Grabbed extends Stack {
     this.width = width;
     this.height = height;
 
-    console.log(`setting ${this.type} size: ${width}, ${height}`);
+    log(`setting ${this.type} size: ${width}, ${height}`);
   }
 
   // returns true if the "grabbed" bounding box overlaps
@@ -102,7 +102,7 @@ class Grabbed extends Stack {
     let top2 = this.y;
     let bottom2 = this.y + this.size.height;
 
-    // console.log(`comparing collision of ${target.size.width}x${target.size.height} @ (${target.x}, ${target.y}) vs. ${this.size.width}x${this.size.height}  @ (${this.x}, ${this.y})`);
+    // log(`comparing collision of ${target.size.width}x${target.size.height} @ (${target.x}, ${target.y}) vs. ${this.size.width}x${this.size.height}  @ (${this.x}, ${this.y})`);
 
     // Check for collisions
     if (bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2) {
@@ -118,7 +118,7 @@ class Grabbed extends Stack {
 
     let index = 52; // highest possible z-index for a 52 card deck
     for (let card of this.children()) {
-      console.log(`setting z-index of grabbed card ${card} to be ${index}`);
+      log(`setting z-index of grabbed card ${card} to be ${index}`);
       card.zIndex = index;
       index += 1;
     }
@@ -131,7 +131,7 @@ class Grabbed extends Stack {
     // on the original parent
     target = target || card.parent;
 
-    console.log(`dropping on ${target.type || 'another card'}`);
+    log(`dropping on ${target.type || 'another card'}`);
 
     card.setParent(target);
 
