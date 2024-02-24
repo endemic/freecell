@@ -84,32 +84,25 @@ class Grabbed extends Stack {
   // returns true if the "grabbed" bounding box overlaps
   // the passed arg bounding box
   overlaps(target) {
-    if (isNaN(target.size.width) ||
-        isNaN(target.size.height) ||
-        isNaN(this.size.height) ||
-        isNaN(this.size.height)) {
-          // cascades have NaN value for height?
-      debugger;
-    }
     // Calculate the sides of the boxes
     let left1 = target.x;
     let right1 = target.x + target.size.width;
     let top1 = target.y;
     let bottom1 = target.y + target.size.height;
 
-    let left2 = this.x;
-    let right2 = this.x + this.size.width;
+    // make AABB slightly narrower for less aggressive collision detection
+    let margin = this.size.width / 6;
+
+    let left2 = this.x + margin;
+    let right2 = this.x + this.size.width - margin;
     let top2 = this.y;
     let bottom2 = this.y + this.size.height;
 
-    // log(`comparing collision of ${target.size.width}x${target.size.height} @ (${target.x}, ${target.y}) vs. ${this.size.width}x${this.size.height}  @ (${this.x}, ${this.y})`);
-
-    // Check for collisions
     if (bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2) {
-      return false; // No collision
+      return false;
     }
 
-    return true; // Collision detected
+    return true;
   }
 
   // sets the `child` prop of the `grabbed` object, and adjusts each card's z-index
