@@ -526,10 +526,10 @@ const onUndo = e => {
   undo();
 };
 
-const onHelp = e => {
+const onAbout = e => {
   e.preventDefault();
 
-  window.open('https://en.wikipedia.org/wiki/FreeCell', '_blank');
+  document.querySelector('#about').style.display = 'block';
 };
 
 document.body.addEventListener('mousemove', onMove);
@@ -540,16 +540,16 @@ document.body.addEventListener('touchend', onUp);
 window.addEventListener('resize', onResize);
 window.addEventListener('keydown', onKeyDown);
 
-const dealButton = document.querySelector('#deal');
-const undoButton = document.querySelector('#undo');
-const helpButton = document.querySelector('#help');
+const dealButton = document.querySelector('#deal_button');
+const undoButton = document.querySelector('#undo_button');
+const aboutButton = document.querySelector('#about_button');
 
 dealButton.addEventListener('mouseup', onDeal);
 undoButton.addEventListener('mouseup', onUndo);
-helpButton.addEventListener('mouseup', onHelp);
+aboutButton.addEventListener('mouseup', onAbout);
 dealButton.addEventListener('touchend', onDeal);
 undoButton.addEventListener('touchend', onUndo);
-helpButton.addEventListener('touchend', onHelp);
+aboutButton.addEventListener('touchend', onAbout);
 
 // start timer
 window.setInterval(() => {
