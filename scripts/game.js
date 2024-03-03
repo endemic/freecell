@@ -17,6 +17,9 @@ const undoStack = [];
 // boolean which can be checked to short-circuit player interaction, etc.
 let gameOver = true;
 
+// allow deal without confirmation on app load
+let firstGame = true;
+
 // current time elapsed in seconds
 let time = 0;
 
@@ -569,9 +572,11 @@ const onKeyDown = e => {
 const onDeal = e => {
   e.preventDefault();
 
-  if (!confirm('New game?')) {
+  if (!firstGame && !confirm('New game?')) {
     return;
   }
+
+  firstGame = false;
 
   reset();
   stackCards();
