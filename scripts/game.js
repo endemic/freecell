@@ -15,7 +15,7 @@ let previousPoint = { x: 0, y: 0};
 const undoStack = [];
 
 // boolean which can be checked to short-circuit player interaction, etc.
-let gameOver = false;
+let gameOver = true;
 
 // current time elapsed in seconds
 let time = 0;
@@ -172,12 +172,12 @@ const reset = () => {
   document.querySelector('#time').textContent = `Time: ${time}`;
 
   gameOver = false;
-  undoStack.length = 0; // trick to empty an array
+  undoStack.length = 0; // hack to empty an array
 
   updateMovableCardsLabel();
 };
 
-const deal = async () => {
+const stackCards = () => {
   // shuffle deck
   let currentIndex = cards.length;
   let randomIndex;
@@ -192,8 +192,6 @@ const deal = async () => {
     [cards[currentIndex], cards[randomIndex]] = [cards[randomIndex], cards[currentIndex]];
   }
 
-  let offset = 0;
-
   // move cards back to initial position
   for (let index = 0; index < cards.length; index += 1) {
     const card = cards[index];
@@ -202,8 +200,12 @@ const deal = async () => {
     card.moveTo(foundations[0].x, foundations[0].y);
     card.zIndex = 51 - index;
   }
+};
 
-  // deal cards
+const deal = async () => {
+  let offset = 0;
+
+  // actually deal cards
   for (let index = 0; index < cards.length; index += 1) {
     const card = cards[index];
 
@@ -513,6 +515,7 @@ const onDeal = e => {
   }
 
   reset();
+  stackCards();
   deal();
 };
 
@@ -564,6 +567,5 @@ window.setInterval(() => {
 // initial resize
 onResize();
 
-if (!DEBUG) {
-  deal();
-}
+// stack cards in place
+stackCards();
