@@ -20,6 +20,10 @@ let gameOver = true;
 // current time elapsed in seconds
 let time = 0;
 
+// store a pointer to cards that are inverted, so as to revert them
+// after mouseup/touchend
+let invertedCard = null;
+
 const cascades = [];
 for (let i = 0; i < 8; i += 1) {
   const cascade = new Cascade();
@@ -162,6 +166,7 @@ const reset = () => {
     c.parent = null;
     c.child = null;
     c.flip('down');
+    c.invert(false);
   });
 
   cascades.forEach(c => c.child = null);
@@ -237,6 +242,7 @@ cards.forEach(card => {
     const point = getPoint(e);
     const delta = Date.now() - lastOnDownTimestamp;
     const doubleClick = delta < 500 && dist(point, previousPoint) < 15;
+    const movableCardCount = movableCards();
 
     // reset the timestamp that stores the last time the player clicked
     // if the current click counts as "double", then set the timestamp way in the past
@@ -255,12 +261,20 @@ cards.forEach(card => {
     // only allow alternating sequences of cards to be picked up
     if (!card.childrenInSequence) {
       log(`can't pick up ${card}, not a sequence!`);
+
+      // try to highlight cards that can be picked up
+      invertedCard = card.invertMovableCards(movableCardCount);
+
       return;
     }
 
     // only allow a certain number of cards to be picked up
-    if (card.childCount >= movableCards()) {
-      log(`You can only pick up ${movableCards()} cards!`);
+    if (card.childCount >= movableCardCount) {
+      log(`You can only pick up ${movableCardCount} cards!`);
+
+      // try to highlight cards that can be picked up
+      invertedCard = card.invertMovableCards(movableCardCount);
+
       return;
     }
 
@@ -288,6 +302,12 @@ const onMove = e => {
 
 const onUp = async e => {
   e.preventDefault();
+
+  // turn off the highlight affordance for movable cards
+  if (invertedCard) {
+    invertedCard.resetInvert();
+    invertedCard = null;
+  }
 
   if (!grabbed.hasCards) {
     return;

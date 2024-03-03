@@ -167,6 +167,37 @@ class Card {
     this.faceUp = !this.faceUp;
   }
 
+  invert(value) {
+    this.element.style.filter = `invert(${value ? 1 : 0})`;
+  }
+
+  invertMovableCards(cardCount) {
+    let invert = false;
+    let invertedParentCard = null;
+
+    for (let c of this.children()) {
+      if (!invert && c.childCount <= cardCount && c.childrenInSequence) {
+        invert = true;
+        invertedParentCard = c;
+      }
+
+      if (invert) {
+        c.invert(true)
+      }
+    }
+
+    return invertedParentCard;
+  }
+
+  resetInvert() {
+    this.invert(false);
+
+    for (let c of this.children()) {
+      c.invert(false);
+    }
+
+  }
+
   flash() {
     this.element.style.animation = 'burst 250ms';
     wait(250).then(() => this.element.style.animation = '');
