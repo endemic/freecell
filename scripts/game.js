@@ -230,6 +230,10 @@ cards.forEach(card => {
   const onDown = e => {
     e.preventDefault();
 
+    if (gameOver) {
+      return;
+    }
+
     const point = getPoint(e);
     const delta = Date.now() - lastOnDownTimestamp;
     const doubleClick = delta < 500 && dist(point, previousPoint) < 15;
