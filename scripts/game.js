@@ -164,7 +164,7 @@ const attemptToPlayOnFoundation = async card => {
 
         CardWaterfall.start(() => {
           reset();
-          deal();
+          stackCards();
         });
       }
 
@@ -375,7 +375,7 @@ const onUp = async e => {
 
         CardWaterfall.start(() => {
           reset();
-          deal();
+          stackCards();
         });
       }
 
