@@ -476,6 +476,12 @@ const onResize = () => {
 
   // Handle resizing <canvas> for card waterfall
   CardWaterfall.onResize(windowWidth, windowHeight);
+
+  // if in a "game over" state, cards are stacked on top of the left-most foundation, and
+  // won't be moved along with it, because they are not attached
+  if (gameOver) {
+    cards.forEach(c => c.moveTo(foundations[0].x, foundations[0].y));
+  }
 };
 
 const undo = () => {
@@ -533,12 +539,6 @@ const onUndo = e => {
   undo();
 };
 
-const onAbout = e => {
-  e.preventDefault();
-
-  document.querySelector('#about').style.display = 'block';
-};
-
 document.body.addEventListener('mousemove', onMove);
 document.body.addEventListener('touchmove', onMove);
 document.body.addEventListener('mouseup', onUp);
@@ -553,10 +553,12 @@ const aboutButton = document.querySelector('#about_button');
 
 dealButton.addEventListener('mouseup', onDeal);
 undoButton.addEventListener('mouseup', onUndo);
-aboutButton.addEventListener('mouseup', onAbout);
+aboutButton.addEventListener('mouseup', showAboutScreen);
+// Mobile Safari seems to have some undocumented conditions that need
+// to be met before it will fire `click` events
 dealButton.addEventListener('touchend', onDeal);
 undoButton.addEventListener('touchend', onUndo);
-aboutButton.addEventListener('touchend', onAbout);
+aboutButton.addEventListener('touchend', showAboutScreen);
 
 // start timer
 window.setInterval(() => {

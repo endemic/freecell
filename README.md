@@ -55,9 +55,12 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] Ensure status/menu bars look good on portrait/landscape desktop/mobile
   * can use orientation media queries for different height values
 - [x] Add metadata/icon
-- [ ] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted? https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/invert
 - [x] service worker for offline access
   * ensure all relevant files are listed for cache
 - [x] Add padding to status bar to prevent curved screen corners from cutting off content
-- [ ] Add "about" page with games played/won stats
+- [x] Add "about" page with games played/won stats
 - [x] Make collision detection slightly less aggressive and/or determine which target overlaps the most (lots of work)
+- [ ] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted? https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/invert
+- [ ] save stats on game over
+- [x] ensure stats are reloaded when "about" dialog is displayed
+- [x] change og image to just be the icon
