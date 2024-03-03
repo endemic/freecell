@@ -247,7 +247,7 @@ const deal = async () => {
 
   // increment games played counter
   const key = 'freecell:playedGames';
-  let playedGames = localStorage.getItem(key);
+  let playedGames = parseInt(localStorage.getItem(key), 10);
   localStorage.setItem(key, playedGames + 1);
 };
 
@@ -360,12 +360,12 @@ const onUp = async e => {
 
         // increment games won counter
         let key = 'freecell:wonGames';
-        let wonGames = localStorage.getItem(key);
+        let wonGames = parseInt(localStorage.getItem(key), 10);
         localStorage.setItem(key, wonGames + 1);
 
         // check for fastest game time
         key = 'freecell:fastestGame';
-        let fastestGame = localStorage.getItem(key);
+        let fastestGame = parseInt(localStorage.getItem(key), 10);
         if (time < fastestGame) {
           localStorage.setItem(key, time);
         }
