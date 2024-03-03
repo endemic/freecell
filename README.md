@@ -46,9 +46,6 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] fix menu bar on mobile -- for some reason the event handlers don't work
 - [x] Cards are still animating _under_ when double-click
 - [x] Ensure that "movable cards" counter updates properly
-
-## IN PROGRESS
-
 - [x] Add delayed animation to moving `grabbed` object so cards swirl around as they are moved
   * this is problematic using delays, because each time the player moves the cursor, the delay is reset -- therefore the child cards don't actually move until the cursor _stops_
 - [x] BUG: if clicking the canvas immediately after waterfall is fired and before a double-clicked card is animated, a TypeError gets generated because `resetZIndex` is called on the card after a 250ms delay, but `reset()` has already been called by the game, which removes all parent references. Solution: delay game win check by 250ms
@@ -60,7 +57,7 @@ with no animation indicating the action. Similarly when turning cards from a tal
 - [x] Add padding to status bar to prevent curved screen corners from cutting off content
 - [x] Add "about" page with games played/won stats
 - [x] Make collision detection slightly less aggressive and/or determine which target overlaps the most (lots of work)
-- [ ] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted? https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/invert
-- [ ] save stats on game over
+- [x] Use `filter: invert(1);` when tapping on too many cards; ones you can't pick up are inverted? https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/invert
+- [x] save stats on game over
 - [x] ensure stats are reloaded when "about" dialog is displayed
 - [x] change og image to just be the icon

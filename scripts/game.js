@@ -144,6 +144,18 @@ const attemptToPlayOnFoundation = async card => {
       if (checkWin()) {
         gameOver = true;
 
+        // increment games won counter
+        let key = 'freecell:wonGames';
+        let wonGames = localStorage.getItem(key);
+        localStorage.setItem(key, wonGames + 1);
+
+        // check for fastest game time
+        key = 'freecell:fastestGame';
+        let fastestGame = localStorage.getItem(key);
+        if (time < fastestGame) {
+          localStorage.setItem(key, time);
+        }
+
         // wait for animation to finish
         await waitAsync(250);
 
@@ -229,6 +241,11 @@ const deal = async () => {
 
     offset = index < 7 ? 0 : card.offset;
   };
+
+  // increment games played counter
+  const key = 'freecell:playedGames';
+  let playedGames = localStorage.getItem(key);
+  localStorage.setItem(key, playedGames + 1);
 };
 
 cards.forEach(card => {
@@ -337,6 +354,18 @@ const onUp = async e => {
 
       if (checkWin()) {
         gameOver = true;
+
+        // increment games won counter
+        let key = 'freecell:wonGames';
+        let wonGames = localStorage.getItem(key);
+        localStorage.setItem(key, wonGames + 1);
+
+        // check for fastest game time
+        key = 'freecell:fastestGame';
+        let fastestGame = localStorage.getItem(key);
+        if (time < fastestGame) {
+          localStorage.setItem(key, time);
+        }
 
         // wait for animation to finish
         await waitAsync(250);
