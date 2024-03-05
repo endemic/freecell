@@ -191,7 +191,6 @@ const reset = () => {
   time = 0;
   document.querySelector('#time').textContent = `Time: ${time}`;
 
-  gameOver = false;
   undoStack.length = 0; // hack to empty an array
 
   updateMovableCardsLabel();
@@ -249,6 +248,8 @@ const deal = async () => {
   const key = 'freecell:playedGames';
   let playedGames = parseInt(localStorage.getItem(key), 10) || 0;
   localStorage.setItem(key, playedGames + 1);
+
+  gameOver = false;
 };
 
 cards.forEach(card => {
