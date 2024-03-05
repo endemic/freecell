@@ -176,7 +176,7 @@ class Card {
     let invertedParentCard = null;
 
     for (let c of this.children()) {
-      if (!invert && c.childCount <= cardCount && c.childrenInSequence) {
+      if (!invert && c.childCount < cardCount && c.childrenInSequence) {
         invert = true;
         invertedParentCard = c;
       }
