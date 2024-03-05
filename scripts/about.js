@@ -1,4 +1,4 @@
-const statsKeys = ['playedGames', 'wonGames', 'fastestGame'];
+const statsKeys = ['playedGames', 'wonGames'/*, 'fastestGame'*/];
 const prefixed = key => `freecell:${key}`;
 
 const loadStats = () => {
