@@ -149,7 +149,7 @@ const attemptToPlayOnFoundation = async card => {
 
         // increment games won counter
         let key = 'freecell:wonGames';
-        let wonGames = localStorage.getItem(key);
+        let wonGames = parseInt(localStorage.getItem(key), 10) || 0;
         localStorage.setItem(key, wonGames + 1);
 
         // check for fastest game time
