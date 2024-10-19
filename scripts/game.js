@@ -76,7 +76,7 @@ SUITS.forEach(suit => {
   });
 });
 
-if (DEBUG) {
+if (false) {
   for (let i = 0; i < foundations.length; i += 1) {
     let foundation = foundations[i];
 
@@ -106,14 +106,22 @@ const checkWin = () => {
 };
 
 // If this function evaluates truthy, all stacks on the tableau are organized such that the game is basically won
-const enableAutoWin = () => cascades.every(c => !c.hasCards || c.child.childrenInSequence);
+const enableAutoSolve = () => {
+  if (cascades.every(c => !c.hasCards || c.child.childrenInSequence)) {
+    document.querySelector('#solve_button').style.display = 'block';
+    return true;
+  }
+
+  return false;
+};
+
+
 
 // Electronic versions of the game allow you to pick up multiple
 // cards as a shortcut for putting them into open cells one at a time
 // You're always allowed to move at least one card, so the "formula"
 // is (open cells + 1)
 const movableCards = () => {
-  // TODO: max = Math.pow(2, emptyCascades) * (emptyCells + 1)
   return cells.reduce((total, cell) => total + (cell.hasCards ? 0 : 1), 1);
 };
 
@@ -171,9 +179,11 @@ const attemptToPlayOnFoundation = async card => {
       updateMovableCardsLabel();
 
       // if we have a valid play, return from this function;
-      return;
+      return true;
     }
   }
+
+  return false;
 };
 
 const reset = () => {
@@ -190,6 +200,7 @@ const reset = () => {
 
   time = 0;
   document.querySelector('#time').textContent = `Time: ${time}`;
+  document.querySelector('#solve_button').style.display = 'none';
 
   undoStack.length = 0; // hack to empty an array
 
@@ -407,6 +418,7 @@ const onUp = async e => {
       log(`dropping ${card} on cell #${i}`);
 
       updateMovableCardsLabel();
+      enableAutoSolve();
 
       // valid play, so return out of the loop checking other cells
       return;
@@ -431,6 +443,7 @@ const onUp = async e => {
       log(`dropping ${card} on cascade #${i}`);
 
       updateMovableCardsLabel();
+      enableAutoSolve();
 
       // valid play, so return out of the loop checking other cells
       return;
@@ -442,6 +455,34 @@ const onUp = async e => {
   log('invalid move; dropping card(s) on original position');
 
   grabbed.drop();
+};
+
+const autoSolve = async () => {
+  // what are we even doing here?
+  // 1. while the game is not won
+  // 2. loop over all cards in cells/cascades
+  // 3. call the `attemptToPlayOnFoundation` method
+
+  // early return in case you're an idiot and call `autoSolve` manually
+  // it will totally be an infinite loop
+  if (!enableAutoSolve()) {
+    return;
+  }
+
+  while (!checkWin()) {
+    for (const stack of [cascades, cells].flat()) {
+      if (!stack.hasCards) {
+        continue;
+      }
+
+      const playedCard = attemptToPlayOnFoundation(stack.lastCard);
+
+      if (playedCard) {
+        // delay for a hot second before playing more, so all cards aren't moved to foundations simultaneously
+        await waitAsync(50);
+      }
+    }
+  }
 };
 
 const onResize = () => {
@@ -605,15 +646,18 @@ window.addEventListener('keydown', onKeyDown);
 const dealButton = document.querySelector('#deal_button');
 const undoButton = document.querySelector('#undo_button');
 const aboutButton = document.querySelector('#about_button');
+const solveButton = document.querySelector('#solve_button');
 
 dealButton.addEventListener('mouseup', onDeal);
 undoButton.addEventListener('mouseup', onUndo);
 aboutButton.addEventListener('mouseup', showAboutScreen);
+solveButton.addEventListener('mouseup', autoSolve);
 // Mobile Safari seems to have some undocumented conditions that need
 // to be met before it will fire `click` events
 dealButton.addEventListener('touchend', onDeal);
 undoButton.addEventListener('touchend', onUndo);
 aboutButton.addEventListener('touchend', showAboutScreen);
+solveButton.addEventListener('touchend', autoSolve);
 
 // start timer
 window.setInterval(() => {

@@ -81,6 +81,8 @@ button:active {
   color: white;
 }
 
+#solve_button { display: none; }
+
 #status {
   align-items: center;
   background-color: white;
