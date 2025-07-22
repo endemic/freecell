@@ -503,7 +503,7 @@ const onResize = () => {
 
   const widthInPixels = 680;
   const heightInPixels = 680;
-  
+
   // set card sizes/margins here
   const margin = (5 / widthInPixels) * tableauWidth; // arbitrary horiztonal margin between cards (6px)
   const width = (80 / widthInPixels) * tableauWidth; // card width (80px)
@@ -606,15 +606,19 @@ const onKeyDown = e => {
 const onDeal = e => {
   e.preventDefault();
 
-  if (!firstGame && !confirm('New game?')) {
-    return;
+  if (firstGame) {
+    reset();
+    stackCards();
+    deal();
+
+    firstGame = false;
+  } else {
+    dialog.show('Deal again?', () => {
+      reset();
+      stackCards();
+      deal();
+    });
   }
-
-  firstGame = false;
-
-  reset();
-  stackCards();
-  deal();
 };
 
 const onUndo = e => {
