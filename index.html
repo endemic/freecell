@@ -48,8 +48,8 @@
 
   <!-- about -->
 
-  <section id="about">
-    <main>
+  <dialog id="about">
+    <section>
       <h1>
         <div class="close"><span class="bar"></span></div>
         About FreeCell
@@ -62,18 +62,6 @@
           <p>Developed by Nathan Demick. Inspired by <a href="https://www.linkedin.com/in/jahorne/" title="Jim Horne">Jim Horne</a>'s
             version of FreeCell for Windows. <a href="https://en.wikipedia.org/wiki/FreeCell" title="Read more on Wikipedia" targe="_blank">Read more on Wikipedia</a></p>
 
-          <!-- <p>
-            FreeCell is a patience-type game where all 52 cards are dealt face up on eight "cascades." The goal is to play cards by suit,
-            from low to high rank, on four "foundation" spaces (similar to Klondike solitaire). The twist is that only one card can be moved
-            at a time. To help move cards around the tableau, there are four "free cells," which can hold any card. As an affordance, most
-            electronic versions of the game allow moving stacks of cards, as long as the stack is smaller than <em>empty cells + 1</em>
-            (this is simply to make the game slightly less tedious). Caution is required when moving cards to the cells, as they can
-            only be moved back to cascades in sequential order, with alternating colors. Experiment as much as you want, however, as there's
-            always the "undo" feature to back yourself out of a jam.
-          </p> -->
-
-          <!-- maybe add sfx/toggle? -->
-
           <h3>Statistics</h3>
 
           <ul>
@@ -85,14 +73,34 @@
           <button id="reset">
             <span class="text">Reset</span>
           </button>
-        </div> <!-- /.description-->
 
-        <button id="return">
-          <span class="text">OK</span>
-        </button>
+          <button id="return" autofocus>
+            <span class="text">OK</span>
+          </button>
+        </div> <!-- /.description-->
       </div> <!-- /content-->
-    </main>
-  </section>
+    </section>
+  </dialog>
+
+  <!-- empty dialog for non-blocking `confirm` -->
+  <dialog id="confirm">
+    <section>
+      <h1>
+        <div class="close"><span class="bar"></span></div>
+        FreeCell
+      </h1>
+
+      <div class="content">
+        <figure>!</figure>
+        <p id="dialog-text"></p>
+
+        <form method="dialog">
+          <button value="yes" autofocus><span class="text">Yes</span></button>
+          <button value="no"><span class="text">No</span></button>
+        </form>
+      </div> <!-- /content-->
+    </section>
+  </dialog>
 
   <script src="scripts/utils.js"></script>
   <script src="scripts/card.js"></script>

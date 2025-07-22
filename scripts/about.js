@@ -14,28 +14,26 @@ const loadStats = () => {
 const resetStats = e => {
   e.preventDefault();
 
-  if (!confirm('Reset statistics?')) {
-    return;
-  }
+  dialog.show('Reset statistics?', () => {
+    statsKeys.forEach(key => {
+      localStorage.setItem(prefixed(key), 0);
+    });
 
-  statsKeys.forEach(key => {
-    localStorage.setItem(prefixed(key), 0);
-
-    document.querySelector(`#${key}`).textContent = '0';
-  });
+    loadStats();
+  })
 };
 
 const showAboutScreen = e => {
   e.preventDefault();
 
   loadStats();
-  document.querySelector('#about').style.display = 'block';
+  document.querySelector('#about').showModal();
 };
 
 const hideAboutScreen = e => {
   e.preventDefault();
 
-  document.querySelector('#about').style.display = 'none';
+  document.querySelector('#about').close();
 };
 
 document.querySelector('#reset').addEventListener('mouseup', resetStats);

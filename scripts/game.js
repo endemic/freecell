@@ -76,21 +76,6 @@ SUITS.forEach(suit => {
   });
 });
 
-if (false) {
-  for (let i = 0; i < foundations.length; i += 1) {
-    let foundation = foundations[i];
-
-    // move all cards to winning positions
-    for (let j = 0; j < 13; j += 1) {
-      let card = cards[(13 * i) + j];
-      card.flip();
-      let parent = foundation.lastCard;
-      card.setParent(parent);
-      card.moveTo(parent.x, parent.y);
-    }
-  }
-}
-
 const checkWin = () => {
   // ensure that each foundation has 13 cards; we don't check for matching suit
   // or ascending rank because those checks are done when the card is played
@@ -114,8 +99,6 @@ const enableAutoSolve = () => {
 
   return false;
 };
-
-
 
 // Electronic versions of the game allow you to pick up multiple
 // cards as a shortcut for putting them into open cells one at a time
@@ -252,6 +235,7 @@ const deal = async () => {
     // this gives the animation time to move the card away from the deck
     card.resetZIndex()
 
+    // only want to offset cards vertically after the first row
     offset = index < 7 ? 0 : card.offset;
   };
 
@@ -489,7 +473,7 @@ const onResize = () => {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
 
-  const aspectRatio = 4 / 3;
+  const aspectRatio = 1;
 
   // playable area, where cards will be drawn
   let tableauWidth;
@@ -507,16 +491,24 @@ const onResize = () => {
 
   let windowMargin = (windowWidth - tableauWidth) / 2;
 
-  // tweak these values as necessary
-  let margin = (4 / 608) * tableauWidth;
+  // debug tableau size for layout testing
+  // let tableauDebug = document.createElement('div');
+  // tableauDebug.style.width = `${tableauWidth}px`;
+  // tableauDebug.style.height = `${tableauHeight}px`;
+  // tableauDebug.style.backgroundColor = 'rgba(255, 0, 255, 0.5)';
+  // tableauDebug.style.position = 'absolute';
+  // tableauDebug.style.top = `0`;
+  // tableauDebug.style.left = `${windowMargin}px`;
+  // document.body.append(tableauDebug);
 
-  // if tableau is 608pt wide, then for 8 columns
-  // each column + margin should be 76
+  const widthInPixels = 680;
+  const heightInPixels = 680;
 
-  // cards are 72x104
-  let width = (72 / 608) * tableauWidth;
-  let height = (104 / 454) * tableauHeight;
-  let offset = height / 3.7; // ~28px
+  // set card sizes/margins here
+  const margin = (5 / widthInPixels) * tableauWidth; // arbitrary horiztonal margin between cards (6px)
+  const width = (80 / widthInPixels) * tableauWidth; // card width (80px)
+  const height = (115 / heightInPixels) * tableauHeight; // card height (115px)
+  const offset = (30 / heightInPixels) * tableauHeight; // arbitrary vertical diff between stacked cards
 
   // enumerate over all cards/stacks in order to set their width/height
   for (const cascade of cascades) {
@@ -614,15 +606,19 @@ const onKeyDown = e => {
 const onDeal = e => {
   e.preventDefault();
 
-  if (!firstGame && !confirm('New game?')) {
-    return;
+  if (firstGame) {
+    reset();
+    stackCards();
+    deal();
+
+    firstGame = false;
+  } else {
+    dialog.show('Deal again?', () => {
+      reset();
+      stackCards();
+      deal();
+    });
   }
-
-  firstGame = false;
-
-  reset();
-  stackCards();
-  deal();
 };
 
 const onUndo = e => {
@@ -672,5 +668,21 @@ window.setInterval(() => {
 // initial resize
 onResize();
 
-// stack cards in place
+// stack cards on left-most foundation
 stackCards();
+
+// set up a win condition; comment out `stackCards` to use this
+if (DEBUG) {
+  for (let i = 0; i < foundations.length; i += 1) {
+    let foundation = foundations[i];
+
+    // move all cards to winning positions
+    for (let j = 0; j < 13; j += 1) {
+      let card = cards[(13 * i) + j];
+      card.flip();
+      let parent = foundation.lastCard;
+      card.setParent(parent);
+      card.moveTo(parent.x, parent.y);
+    }
+  }
+}
