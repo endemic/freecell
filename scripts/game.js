@@ -305,8 +305,6 @@ cards.forEach(card => {
 });
 
 const onMove = e => {
-  e.preventDefault();
-
   if (!grabbed.hasCards) {
     return;
   }
@@ -316,9 +314,7 @@ const onMove = e => {
   grabbed.moveTo(point);
 };
 
-const onUp = async e => {
-  e.preventDefault();
-
+const onUp = async () => {
   // turn off the highlight affordance for movable cards
   if (invertedCard) {
     invertedCard.resetInvert();
