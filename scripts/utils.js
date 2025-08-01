@@ -34,32 +34,32 @@ const log = (...params) => {
 
 const dialog = {
   init: () => {
-    const dialog = document.querySelector('dialog#confirm');
-    dialog.addEventListener('close', () => {
-      if (dialog.returnValue !== 'yes') {
+    const element = document.querySelector('dialog#confirm');
+    element.addEventListener('close', () => {
+      if (element.returnValue !== 'yes') {
         // user clicked outside the dialog or pressed escape
         return;
       }
-      this.onConfirm();
+      dialog.onConfirm();
     });
   },
   onConfirm: () => {
     // default no-op
   },
   show: (message, onConfirmFunction) => {
-    const dialog = document.querySelector('dialog#confirm');
-    dialog.querySelector('#dialog-text').textContent = message;
-    dialog.showModal();
+    const element = document.querySelector('dialog#confirm');
+    element.querySelector('#dialog-text').textContent = message;
+    element.showModal();
 
     if (typeof onConfirmFunction === 'function') {
-      this.onConfirm = onConfirmFunction;
+      dialog.onConfirm = onConfirmFunction;
     }
   },
 
   close: () => {
-    const dialog = document.querySelector('dialog#confirm');
-    dialog.close();
+    document.querySelector('dialog#confirm').close();
   }
 };
 
 dialog.init();
+
